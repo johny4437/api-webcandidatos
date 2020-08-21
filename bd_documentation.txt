@@ -3,6 +3,10 @@
   - Admin (nós)
   - Candidato
   - Eleitor (usuário)
+  
+  ROTA CANDIDATO:
+    - SINGUP..PRONTO
+    - LOGIN ..PRONTO
 
 - Rotas
   - user
