@@ -9,6 +9,7 @@
     - inserir
     - visualizar
     - listar
+    - logar
     - apagar desativar
     - campos
       - name
