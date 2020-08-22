@@ -5,7 +5,7 @@ exports.create = (req, res) => {
 
     const {title, description} = req.body;
     
-    if(req.files){
+  
         let path = '';
         req.files.forEach((files,index, arr) => {
             path = path + files.path + ','
@@ -21,7 +21,7 @@ exports.create = (req, res) => {
             candidate_id
     })
         
-}
+
 
     
 
