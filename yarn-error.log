@@ -1,0 +1,43 @@
+Arguments: 
+  /home/darklinux/.nvm/versions/node/v12.13.0/bin/node /usr/share/yarn/bin/yarn.js add express nodemon knex jsonebtoken pg
+
+PATH: 
+  /home/darklinux/.nvm/versions/node/v12.13.0/bin:/home/darklinux/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/darklinux/Android/Sdk/emulator:/home/darklinux/Android/Sdk/tools:/home/darklinux/Android/Sdk/tools/bin:/home/darklinux/Android/Sdk/platform-tools
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.13.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/jsonebtoken: Not found
+      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66987:18)
+      at Request.self.callback (/usr/share/yarn/lib/cli.js:140748:22)
+      at Request.emit (events.js:210:5)
+      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141720:10)
+      at Request.emit (events.js:210:5)
+      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141642:12)
+      at Object.onceWrapper (events.js:299:28)
+      at IncomingMessage.emit (events.js:215:7)
+      at endReadableNT (_stream_readable.js:1183:12)
+      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+
+npm manifest: 
+  {
+    "name": "api-webcandidatos",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "git@github.com:johny4437/api-webcandidatos.git",
+    "author": "johny anastacio <johnyanastaciods@gmail.com>",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

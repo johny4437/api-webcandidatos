@@ -1,0 +1,26 @@
+{
+  "name": "api-webcandidatos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:johny4437/api-webcandidatos.git",
+  "author": "johny anastacio <johnyanastaciods@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon ./src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.21.5",
+    "multer": "^1.4.2",
+    "nodemon": "^2.0.4",
+    "pg": "^8.3.2",
+    "qrcode": "^1.4.4"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "qr-image": "^3.2.0"
+  }
+}
