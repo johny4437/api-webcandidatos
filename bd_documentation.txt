@@ -1,0 +1,124 @@
+* Começar documentação banco de dados
+- Tipos de usuário
+  - Admin (nós)
+  - Candidato
+  - Eleitor (usuário)
+  
+  ROTA CANDIDATO:
+    - SINGUP..PRONTO
+    - LOGIN ..PRONTO
+
+- Rotas
+  - user
+    - inserir
+    - visualizar
+    - listar
+    - logar
+    - apagar desativar
+    - campos
+      - name
+      - id
+      - name
+      - password
+      - party
+      - coalition
+      - city
+      - state
+      - cpf
+      - number - número do candidato
+      - description
+      - profile_pic
+      - cover_pic
+      - status - se a conta é verificada, se já verificamos a documentação do candidato
+      - qrcode - qr code que levará para o perfil do usuário
+      - created_at
+      - updated_at
+      - doc_selfie - vamo pedir pra pessoa mandar uma selfie pra comprovar que é ela
+      - doc_identity - vamo pedir foto da identidade
+      - doc_files_candidate - pedir pra mandar foto do documento comprovando que é candidato
+  - hashtags_perfil
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - publication
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - like
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - comment
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - share_whatsapp
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - favorite
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - notification - vamo deixar essa em standby por enquanto, se der tempo a gente implementa
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - view_profile - salvar quando um usuário visualiza o perfil de um candidato
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - view_post - salvar quando um usuário visualiza a postagem de um candidato
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - view_proposal - salvar quando o usuário visualiza as propostas do usuário
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - view_qrcode - salvar quando um usuário abriu o perfil do usuário pelo qrcode, caso seja um usuário não cadastrado, salvar assim mesmo
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - search_query - salvar as buscas que os usuários estão fazendo, podemos salvar a cada tecla que digita mesmo
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - view_hashtag - salvar quando um usuário clicou em uma hashtag
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - badges - coisas que o candidato é, tipo se é candidato a prefeito ou vereador, se é ficha limpa, por enquanto só pensei nesses, mas pode ser que colocamos mais, mais pra frente
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+  - payments - salva o pagamento gerado da inscrição do usuário no app
+    - inserir
+    - visualizar
+    - listar
+    - apagar - desativar
+    - campos
+      - id
+      - charge_id - id do pagamento
+      - candidate_id
+      - value
+      - status
+      - payment_method - se foi boleto ou cartão
+      - link - segunda via do boleto
+      - expire_at - data de expiração do boleto
+      - created_at
+      - updated_at
