@@ -30,7 +30,7 @@ exports.create = (req, res) =>{
           const files = req.files;
           let { profile_pic, cover_pic } = files;
           
-    
+          console.log(profile_pic)
           const text = `http://192.168.0.110:3333/candidates/${id}`
           const qrcode =    generateQR(text)
 

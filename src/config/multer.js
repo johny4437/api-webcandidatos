@@ -18,14 +18,15 @@ module.exports ={
         }
     }),
     limits:{
-        fileSize: 2 * 1024 * 1024
+        fileSize: 50 * 1024 * 1024
     },
     fileFilter:(req, file, cb) =>{
         const allowedMimes = [
             "image/jpeg",
             "image/jpg",
             "image/png",
-            "image/pjpeg"
+            "image/pjpeg",
+            "video/mp4"
         ];
 
         if(allowedMimes.includes(file.mimetype)){
