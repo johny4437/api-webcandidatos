@@ -18,7 +18,7 @@ module.exports ={
         }
     }),
     limits:{
-        fileSize: 50 * 1024 * 1024
+        fileSize: 5* 1024 * 1024
     },
     fileFilter:(req, file, cb) =>{
         const allowedMimes = [

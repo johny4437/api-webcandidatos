@@ -1,7 +1,9 @@
 var QRCode = require('qrcode');
 const knex = require('../../database/connection');
 const crypto = require('crypto')
-const {hashPassword} = require('../../utils/passwordHash');
+const jwt  = require('jsonwebtoken');
+const {JWT_SECRET} = require('../../variables');
+const {hashPassword, comparePassword} = require('../../utils/passwordHash');
 const {generateQR}= require('../../utils/qrGenerator');
 
 require('dotenv').config({path:'../../.env'})
@@ -28,9 +30,7 @@ exports.create = (req, res) =>{
           } = req.body;
     
           const files = req.files;
-          let { profile_pic, cover_pic } = files;
-          
-          console.log(profile_pic)
+          let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           const text = `http://192.168.0.110:3333/candidates/${id}`
           const qrcode =    generateQR(text)
 
@@ -54,9 +54,15 @@ exports.create = (req, res) =>{
             url_profile_pic:`http://192.169.0.110/files/${profile_pic[0].filename}`,
             cover_pic: cover_pic[0].filename,
             url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
+            doc_selfie:doc_selfie[0].filename,
+            //url_doc_selfie:`http://192.168.0.110/files/${doc_selfie[0].filename}`,
+            doc_identity:doc_identity[0].filename,
+            //url_doc_identity:`http://192.168.0.110/files/${doc_identity[0].filename}`,
+            doc_files_candidate:doc_files_candidate[0].filename,
+          //  url_doc_files_candidate:`http://192.168.0.110/files/${doc_files_candidate[0].filename}`,
             status: 'actived', //actived | deactived | verified
             qrcode:qrcode,
-            date: new Date()
+            
           };
          
           
@@ -80,11 +86,12 @@ exports.create = (req, res) =>{
 // ================================================================================================
 exports.update = async (req, res) => {
 
+  const id = req.params.candidate_id;
 
     
   const hash = hashPassword(req.body.password);
   const password = hash.hash;
-  const id = crypto.randomBytes(4).toString('HEX');
+ 
 
   const {
       name,
@@ -121,13 +128,12 @@ exports.update = async (req, res) => {
       cover_pic: cover_pic[0].filename,
       url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
       status: 'actived', //actived | deactived | verified
-      date: new Date()
     };
    
     
 
-  await knex('candidates').select('email')
-        .where('email', email)
+  await knex('candidates').select('id')
+        .where('id', id)
         .update(candidate)
 
     res.status(200).json({message:"User updated"})
@@ -145,3 +151,24 @@ exports.remove = (req,res) => {
     res.json("User Removed")
 
 }
+
+//CONTROLLER DE LOGIN PARA CANDIDATO
+exports.singin = async (req, res) =>{
+    
+  const {email, password} = req.body;
+
+  const user = await knex('candidates').where('email', email)
+                      .select('password','id', 'name')
+                      .first()
+
+      if(!(comparePassword(password, user.password))){
+          res.json("Password doesn't match")
+      }
+      //generate a token
+      const token = jwt.sign({id:user._id}, JWT_SECRET);
+      // persist the token
+      res.cookie('t',token, {expire:new Date() + 8888});
+      const {id, name} = user;
+      return res.status(200).json({token, user:{id, name}});
+}
+

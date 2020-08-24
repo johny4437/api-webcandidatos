@@ -2,7 +2,7 @@ const knex = require('../database/connection');
 
 
 exports.isAuth = (req, res, next) => {
-    //console.log(req.profile[0].id)
+    console.log(req.profile[0].id)
     // console.log({parms:req.params.candidate_id})
     if(!(req.profile[0].id == req.params.candidate_id)){
         return res.status(400).json({error:"User not authorized"})
@@ -23,7 +23,7 @@ exports.userId = (req, res, next, id) =>{
         }
          req.profile = data
 
-       // console.log({userInitial:data})
+        console.log({userInitial:data})
 
         next();
     })

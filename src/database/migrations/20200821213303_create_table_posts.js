@@ -9,7 +9,7 @@ return knex.schema.createTable('posts', function(table){
     table.text('photo_url');
     table.text('video');
     table.text('description');
-
+    table.specificType('likes', 'text ARRAY');
     table.string('candidate_id').notNullable();
     table.foreign('candidate_id').references('id').inTable('candidates')
 })

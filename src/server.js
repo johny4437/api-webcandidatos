@@ -4,6 +4,7 @@ const path = require('path')
 const morgan = require('morgan');
 const candidateRoute = require('./routes/candidatesRoute');
 const postsRoute = require('./routes/postsRoute');
+const usersRoute = require('./routes/userRoute');
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -11,8 +12,9 @@ app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
 
 app.use(morgan("dev"));
 app.use(candidateRoute);
-
+app.use(usersRoute);
 app.use(postsRoute);
+
 
 
 const PORT = process.env.PORT || 3333;
