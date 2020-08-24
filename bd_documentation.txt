@@ -10,42 +10,43 @@
 
 - Rotas
   - user
-    - inserir
-    - visualizar
-    - listar
-    - logar
-    - apagar desativar
-    - campos
-      - name
-      - id
-      - name
-      - password
-      - party
-      - coalition
-      - city
-      - state
-      - cpf
-      - number - número do candidato
-      - description
-      - profile_pic
-      - cover_pic
-      - status - se a conta é verificada, se já verificamos a documentação do candidato
-      - qrcode - qr code que levará para o perfil do usuário
-      - created_at
-      - updated_at
-      - doc_selfie - vamo pedir pra pessoa mandar uma selfie pra comprovar que é ela
-      - doc_identity - vamo pedir foto da identidade
-      - doc_files_candidate - pedir pra mandar foto do documento comprovando que é candidato
+    - inserir (pronto!!)
+    - visualizar (pronto!!)
+    - listar (pronto!!)
+    - logar (pronto!!)
+    - apagar desativar (pronto!!)
+    - campos        (pronto!!)
+      - name        (pronto!!)
+      - id          (pronto!!)
+      - name        (pronto!!)
+       -email       (pronto!!) - inserir também a conta de email onde vamos contatar o candidato.
+      - password    (pronto!!)
+      - party       (pronto!!)
+      - coalition   (pronto!!)
+      - city        (pronto!!)
+      - state       (pronto!!)
+      - cpf         (pronto!!)
+      - number - número do candidato   (pronto!!)
+      - description   (pronto!!)
+      - profile_pic    (pronto!!)
+      - cover_pic       (pronto!!)
+      - status - se a conta é verificada, se já verificamos a documentação do candidato  (pronto!!)
+      - qrcode - qr code que levará para o perfil do usuário    
+      - created_at  (pronto!!)
+      - updated_at   (pronto!!)
+      - doc_selfie - vamo pedir pra pessoa mandar uma selfie pra comprovar que é ela  (pronto!!)
+      - doc_identity - vamo pedir foto da identidade  (pronto!!)
+      - doc_files_candidate - pedir pra mandar foto do documento comprovando que é candidato (pronto!!)
   - hashtags_perfil
     - inserir
     - visualizar
     - listar
     - apagar - desativar
-  - publication
-    - inserir
-    - visualizar
-    - listar
-    - apagar - desativar
+  - publication            (pronto!!)
+    - inserir              (pronto!!)
+    - visualizar           (pronto!!)
+    - listar               (pronto!!)
+    - apagar - desativar   (pronto!!)
   - like
     - inserir
     - visualizar
