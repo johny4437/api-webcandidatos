@@ -16,6 +16,7 @@ route.get('/posts/:candidate_id', listAllPosts);
 
 
 
+
 route.param('candidate_id', userId);
 
 

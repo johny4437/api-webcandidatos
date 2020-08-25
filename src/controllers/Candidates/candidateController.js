@@ -5,6 +5,7 @@ const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
 const {generateQR}= require('../../utils/qrGenerator');
+const { orderBy } = require('../../database/connection');
 
 require('dotenv').config({path:'../../.env'})
 
@@ -16,6 +17,9 @@ exports.create = (req, res) =>{
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
         const id = crypto.randomBytes(4).toString('HEX');
+        let cityName  = req.body.city;
+        cityName = cityName.replace(/\s/g,'')
+        let city2 =  cityName.toLowerCase();
 
         const {
             name,
@@ -23,7 +27,6 @@ exports.create = (req, res) =>{
             number,
             party,
             coalition,
-            city,
             state,
             cpf,
             description,
@@ -32,7 +35,7 @@ exports.create = (req, res) =>{
           const files = req.files;
           let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           const text = `http://192.168.0.110:3333/candidates/${id}`
-          const qrcode =    generateQR(text)
+          const qrcode = '';
 
         
 
@@ -46,7 +49,7 @@ exports.create = (req, res) =>{
             number,
             party,
             coalition,
-            city,
+            city:city2,
             state,
             cpf,
             description,
@@ -55,11 +58,11 @@ exports.create = (req, res) =>{
             cover_pic: cover_pic[0].filename,
             url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
             doc_selfie:doc_selfie[0].filename,
-            //url_doc_selfie:`http://192.168.0.110/files/${doc_selfie[0].filename}`,
+            url_doc_selfie:`http://192.168.0.110/files/${doc_selfie[0].filename}`,
             doc_identity:doc_identity[0].filename,
-            //url_doc_identity:`http://192.168.0.110/files/${doc_identity[0].filename}`,
+            url_doc_identity:`http://192.168.0.110/files/${doc_identity[0].filename}`,
             doc_files_candidate:doc_files_candidate[0].filename,
-          //  url_doc_files_candidate:`http://192.168.0.110/files/${doc_files_candidate[0].filename}`,
+            url_doc_files_candidate:`http://192.168.0.110/files/${doc_files_candidate[0].filename}`,
             status: 'actived', //actived | deactived | verified
             qrcode:qrcode,
             
@@ -79,6 +82,60 @@ exports.create = (req, res) =>{
           })
     
 };
+//=================================================================================================
+// CONTROLLER DE LER TODOS OS CANDIDATOS
+// ================================================================================================
+
+exports.read = async (req, res) =>{
+  
+  const candidates = await knex('candidates')
+  .select('id','name','party','coalition','description','city','state','number','url_profile_pic');
+  res.json({candidates})
+  
+}
+// =================================================================================================
+// BUSCA POR UM CANDIDATO ESPECIFICO
+// ================================================================================================
+/**
+ * passa o id do candidato
+ */
+exports.getCandidate = async(req, res) =>{
+  
+  const id = req.params.candidate_id;
+  
+  const candidate = await knex('candidates').where('id',id).select('*');
+  res.json({candidate})
+}
+
+// ==================================================================================================
+// BUSCA POR CIDADE OU ESTADO
+// ===================================================================================================
+
+/**
+ * cidade/
+ * by city = /candidates?city=saomateus
+ * 
+ */
+exports.list = async (req, res) => {
+  let {city, state} = req.query; 
+
+
+  if(city){
+    const user = await knex('candidates').select('id','name','party','coalition','description','city','state','number','url_profile_pic')
+    .limit(6)
+    .where('city','like',`%${city}%`)
+    .orWhere('state','like',`%${state}%`)
+    res.json({user})
+  }else{
+    res.json({message:"NOT FOUND"})
+
+  }
+
+  
+            
+
+     
+}
 
 
 // ==================================================================================================

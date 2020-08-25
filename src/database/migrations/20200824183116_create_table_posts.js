@@ -1,3 +1,4 @@
+
 const knex = require('knex')
 
 exports.up = function(knex) {
@@ -9,9 +10,6 @@ return knex.schema.createTable('posts', function(table){
     table.text('photo_url');
     table.text('video');
     table.text('description');
-    table.specificType('likes', 'text ARRAY');
-    table.string('user_id');
-    table.foreign('user_id').references('id').inTable('users')
     table.string('candidate_id').notNullable();
     table.foreign('candidate_id').references('id').inTable('candidates');
 })
