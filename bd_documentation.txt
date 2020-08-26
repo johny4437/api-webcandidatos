@@ -47,6 +47,8 @@
     - visualizar           (pronto!!)
     - listar               (pronto!!)
     - apagar - desativar   (pronto!!)
+  -Follow                  
+  -Unfollow
   - like
     - inserir
     - visualizar
