@@ -4,8 +4,7 @@ const crypto = require('crypto')
 const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
-const {generateQR}= require('../../utils/qrGenerator');
-const { orderBy } = require('../../database/connection');
+
 
 require('dotenv').config({path:'../../.env'})
 
@@ -16,10 +15,9 @@ exports.create = (req, res) =>{
     
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
-        const id = crypto.randomBytes(4).toString('HEX');
-        let cityName  = req.body.city;
-        cityName = cityName.replace(/\s/g,'')
-        let city2 =  cityName.toLowerCase();
+        const id = crypto.randomBytes(10).toString('HEX') + new Date();
+      
+       
 
         const {
             name,
@@ -27,6 +25,7 @@ exports.create = (req, res) =>{
             number,
             party,
             coalition,
+            city,
             state,
             cpf,
             description,
@@ -35,7 +34,8 @@ exports.create = (req, res) =>{
           const files = req.files;
           let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           const text = `http://192.168.0.110:3333/candidates/${id}`
-          const qrcode = '';
+          
+          let qrcode = '';
 
         
 
@@ -49,7 +49,7 @@ exports.create = (req, res) =>{
             number,
             party,
             coalition,
-            city:city2,
+            city,
             state,
             cpf,
             description,
@@ -70,7 +70,7 @@ exports.create = (req, res) =>{
          
           
 
-        knex('candidates').select('cpf').where('cpf', cpf)
+        knex('candidates').select('cpf','id').where('cpf',cpf)
           .then(usernameList=>{
               if(usernameList.length===0){
                   return knex('candidates')

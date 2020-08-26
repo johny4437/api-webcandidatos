@@ -4,6 +4,7 @@ const multer = require('multer')
 const qr = require('qr-image')
 var upload = multer(multerConfig);
 const {create, read,update, remove, singin,list, getCandidate} = require('../controllers/Candidates/candidateController');
+const {followers} = require('../controllers/Candidates/Followers');
 const auth = require('../middlewares/auth');
 const {isAuth, userId} = require('../middlewares/candidateAuth');
 
@@ -20,6 +21,8 @@ route.get('/candidates/:candidate_id', getCandidate);
 route.put('/candidates/update/:candidate_id', auth,isAuth,cpUpload,update)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuth, remove);
+
+route.get('/followers/:candidate_id', auth,isAuth,followers);
 
 
 route.param('candidate_id', userId);

@@ -6,7 +6,9 @@ exports.up = function(knex) {
       table.boolean('status').notNullable().defaultTo(true);
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.text('user_id');
-      table.text('post_id');
+      table.integer('post_id').notNullable();
+      table.foreign('post_id').references("id").inTable('posts');
+      table.timestamp('createdAt').defaultTo(knex.fn.now());
   })
 };
 
