@@ -47,14 +47,14 @@
     - visualizar           (pronto!!)
     - listar               (pronto!!)
     - apagar - desativar   (pronto!!)
-  -Follow                  
-  -Unfollow
-  - like
+  -Follow                  (pronto!!)      
+  -Unfollow                (pronto!!)
+  - like                   (pronto!!)
     - inserir
     - visualizar
     - listar
     - apagar - desativar
-  - comment
+  - comment                 (pronto!!)
     - inserir
     - visualizar
     - listar

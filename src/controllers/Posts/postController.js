@@ -37,7 +37,7 @@ exports.create =  (req, res) => {
 
     console.log(post)
     knex('posts').insert(post).then(()=>{
-        res.json('certo')
+        res.json({msg:"POST CREATE"})
     }).catch((err)=>console.log(err))
  
 

@@ -24,6 +24,7 @@ route.post('/follow/:user_id', auth, isAuth, follow);
 route.delete('/unfollow/:user_id',auth, isAuth, unfollow);
 // ==================================================================================
 // comments route
+
 route.post('/user/comment/create/:user_id', auth, isAuth, createComments );
 route.get('/comments', readComments);
 route.put('/comments/update/:user_id', auth, isAuth, updateComments);

@@ -216,8 +216,7 @@ exports.singin = async (req, res) =>{
 
   const user = await knex('candidates').where('email', email)
                       .select('password','id', 'name')
-                      .first()
-
+                      .first();
       if(!(comparePassword(password, user.password))){
           res.json("Password doesn't match")
       }

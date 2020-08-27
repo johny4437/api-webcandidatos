@@ -3,9 +3,9 @@ module.exports = {
   development:{
     client:"pg",
     connection:{
-      database:"candidates",
+      database:"apicandidates",
       user:"postgres",
-      password:"root"
+      password:"johny@123"
     },
     migrations:{
       directory:`${__dirname}/src/database/migrations`

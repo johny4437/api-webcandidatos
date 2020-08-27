@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const candidateRoute = require('./routes/candidatesRoute');
 const postsRoute = require('./routes/postsRoute');
 const usersRoute = require('./routes/userRoute');
+const propRoute = require('./routes/proposalRoute');
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -14,6 +15,7 @@ app.use(morgan("dev"));
 app.use(candidateRoute);
 app.use(usersRoute);
 app.use(postsRoute);
+app.use(propRoute);
 
 
 
