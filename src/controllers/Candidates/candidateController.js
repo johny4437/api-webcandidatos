@@ -15,7 +15,7 @@ exports.create = (req, res) =>{
     
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
-        const id = crypto.randomBytes(10).toString('HEX') + new Date();
+        const id = crypto.randomBytes(10).toString('HEX');
       
        
 
@@ -214,17 +214,37 @@ exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
 
-  const user = await knex('candidates').where('email', email)
+
+  
+
+    knex('candidates').where('email', email)
                       .select('password','id', 'name')
-                      .first();
-      if(!(comparePassword(password, user.password))){
-          res.json("Password doesn't match")
-      }
-      //generate a token
-      const token = jwt.sign({id:user._id}, JWT_SECRET);
-      // persist the token
-      res.cookie('t',token, {expire:new Date() + 8888});
-      const {id, name} = user;
-      return res.status(200).json({token, user:{id, name}});
+                      .first()
+                      .then(user =>{
+                        if(!user){
+                          res.status(401).json({
+                            error: "USER NOt EXISTS"
+                         })
+                        }else{
+                          return comparePassword(password, user.password)
+                                  .then(isAuthenticated=>{
+                                    if(!isAuthenticated){
+                                      res.status(401).json({
+                                        error: "Unauthorized Access!"
+                                      })
+                                    }else{
+                                      const token = jwt.sign({id:user.id}, JWT_SECRET)
+                                      //persistindo token
+                                      res.cookie('t', token, {expire:new Date() + 8888})
+                                      res.status(200).json({token, user})
+                                    }
+                                  })
+                        }
+                      })
+                      
+      // if(!(comparePassword(password, user.password))){
+      //     res.json("Password doesn't match")
+      // }
+      
 }
 

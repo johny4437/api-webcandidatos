@@ -88,21 +88,32 @@ exports.singin= async (req, res) => {
     
     const { email, password } = req.body;
 
-    const user =  await  knex('users').where('email', email)
-                .select('id','name', 'password')
-                .first();
-    if(!(comparePassword(password, user.password))){
-        return res.json({message:"Password doesn't Match"});
-    }
-
-    //criando token
-    const token = jwt.sign({id:user.id}, JWT_SECRET);
-    //persistindo token
-    res.cookie('t', token, {expire:new Date() + 8888})
-
-    const { id, name } = user;
-
-    res.status(200).json({token, user:{id, name}})
+    
+    knex('candidates').where('email', email)
+    .select('password','id', 'name')
+    .first()
+    .then(user =>{
+      if(!user){
+        res.status(401).json({
+          error: "USER NOT EXISTS"
+       })
+      }else{
+        return comparePassword(password, user.password)
+                .then(isAuthenticated=>{
+                  if(!isAuthenticated){
+                    res.status(401).json({
+                      error: "Unauthorized Access!"
+                    })
+                  }else{
+                    const token = jwt.sign({id:user.id}, JWT_SECRET)
+                    //persistindo token
+                    res.cookie('t', token, {expire:new Date() + 8888})
+                    res.status(200).json({token, user})
+                  }
+                })
+      }
+    })
+    
     
 
 
