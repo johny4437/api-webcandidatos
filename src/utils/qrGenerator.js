@@ -1,14 +1,15 @@
 const QR = require('qrcode');
 const path = require('path')
 
-const generateQR = async text =>{
+async function generateQRCODE(text){
     try {
-        await QR.toDataURL(text)
+     const url =  await QR.toDataURL(text,{ errorCorrectionLevel: 'H' })
+        return  url
       } catch (err) {
         console.error(err)
       }
 };
 
 module.exports ={
-    generateQR
+    generateQRCODE
 }

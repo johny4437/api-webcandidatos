@@ -84,7 +84,7 @@
     - visualizar
     - listar
     - apagar - desativar
-  - view_proposal - salvar quando o usuário visualiza as propostas do candidato
+  - view_proposal - salvar quando o usuário visualiza as propostas do candidato ()
     - inserir
     - visualizar
     - listar

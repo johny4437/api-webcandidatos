@@ -1,15 +1,16 @@
-var QRCode = require('qrcode');
+
 const knex = require('../../database/connection');
 const crypto = require('crypto')
 const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
+const {generateQRCODE} = require('../../utils/qrGenerator')
 
 
 require('dotenv').config({path:'../../.env'})
 
 
-exports.create = (req, res) =>{
+exports.create = async (req, res) =>{
 
 
     
@@ -35,7 +36,7 @@ exports.create = (req, res) =>{
           let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           const text = `http://192.168.0.110:3333/candidates/${id}`
           
-          let qrcode = '';
+          let qrcode = await generateQRCODE('http://127.0.0.1:3333'+ number);
 
         
 
@@ -70,7 +71,7 @@ exports.create = (req, res) =>{
          
           
 
-        knex('candidates').select('cpf','id').where('cpf',cpf)
+       await knex('candidates').select('cpf','id').where('cpf',cpf)
           .then(usernameList=>{
               if(usernameList.length===0){
                   return knex('candidates')

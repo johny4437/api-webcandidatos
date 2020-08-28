@@ -1,4 +1,5 @@
 const knex = require('../../database/connection');
+const { insert } = require('../../database/connection');
 
 exports.create = (req, res) => {
     const user_id = req.params.user_id;
@@ -7,29 +8,17 @@ exports.create = (req, res) => {
     const view = {
         user_id,
         post_id,
-        number_views:1,
         view_at:new Date()
     }
 
-    knex('view_post').where('user_id', user_id).andWhere('post_id', post_id).select('*')
-    .then(viewData => {
-        if(viewData.length !== 0){
-            return knex('view_post').where('post_id',post_id).andWhere('user_id',user_id)
-            .update({
-                number_views: viewData[0].number_views + 1,
-                view_at: new Date()
-            }).then(() => {
-                res.status(200).json({msg:"NUMBER VIEWs UPDATED"})
-            })
-        }else{
-            return knex('view_post').insert(view)
+        knex('view_post').insert(view)
             .then(() => {
-                res.status().json({msg:"VIEW FIRST"})
+                res.status().json({msg:"VIEW INSERTED"})
             }).catch(() => {
                 res.status(400).json({error:"ERROR TO INSERT"})
             })
-        }
-    })
+        
+    
 };
 
 exports.readViewPost = (req, res) => {
