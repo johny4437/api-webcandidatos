@@ -15,6 +15,7 @@ return knex.schema.createTable('posts', function(table){
     table.string('candidate_id').notNullable();
     table.foreign('candidate_id').references('id').inTable('candidates');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.text('updated_at');
 
 })
   

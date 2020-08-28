@@ -9,6 +9,7 @@ exports.up = function(knex) {
       table.text('photo_url');
       table.text('candidatesFollowed');
       table.timestamp('createdAt').defaultTo(knex.fn.now());
+      table.text('updated_at');
   })
 };
 

@@ -9,6 +9,7 @@ const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
 const {readVisits} = require('../controllers/ViewProfile/viewProfile')
 const {readViewPost} = require('../controllers/ViewPost/ViewPost')
+const {createBadge, readBadges, updateBadge} = require('../controllers/BadgeCandidates/Badges');
 
 var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
  {name:'cover_pic', maxCount:1},{name:'doc_selfie', maxCount:1},{name:'doc_identity', maxCount:1},
@@ -29,6 +30,11 @@ route.get('/followers/:candidate_id', auth,isAuthCandidate,followers);
 route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)
 // VER NUMERO DE VISITANTES POR POST
 route.get('/candidates/view-post/:candidate_id', auth, isAuthCandidate, readViewPost);
+//======================================================================================
+// BADGES ROUTE
+route.post('/candidates/badges/create/:candidate_id', auth, isAuthCandidate, createBadge);
+route.get('/badges', readBadges);
+route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
 
 
 route.param('candidate_id', candidateId);

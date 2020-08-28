@@ -16,7 +16,8 @@ exports.create = async (req, res) =>{
     
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
-        const id = crypto.randomBytes(10).toString('HEX');
+        const cand_id= crypto.randomBytes(10).toString('HEX')
+        const id = cand_id + Date.now();
       
        
 
@@ -36,7 +37,10 @@ exports.create = async (req, res) =>{
           let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           const text = `http://192.168.0.110:3333/candidates/${id}`
           
-          let qrcode = await generateQRCODE('http://127.0.0.1:3333'+ number);
+          
+          const str = name+ " " + number;
+          let newName = str.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
+          let qrcode = await generateQRCODE('http://127.0.0.1:3333'+ newName);
 
         
 
@@ -68,16 +72,25 @@ exports.create = async (req, res) =>{
             qrcode:qrcode,
             
           };
-         
+
+        
           
 
        await knex('candidates').select('cpf','id').where('cpf',cpf)
           .then(usernameList=>{
               if(usernameList.length===0){
-                  return knex('candidates')
+                 
+
+                  
+
+                  
+              }else{
+                return knex('candidates')
                   .returning('id')
                   .insert(candidate)
-                  .then(()=>{return res.json({message:"user was inserted"})});
+                  .then(()=>{
+                    return res.json({message:"user was inserted"})
+                });
               }
               return res.status(404).json({message:"user already exists"})
           })
@@ -186,6 +199,7 @@ exports.update = async (req, res) => {
       cover_pic: cover_pic[0].filename,
       url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
       status: 'actived', //actived | deactived | verified
+      updated_at:new Date()
     };
    
     

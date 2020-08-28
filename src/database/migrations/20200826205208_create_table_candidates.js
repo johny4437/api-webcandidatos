@@ -27,6 +27,7 @@ exports.up = function(knex) {
 		table.text('status') //se a conta é verificada
         table.text('qrcode') //qr code que levará para o perfil do usuário
 		table.timestamp('created_at').defaultTo(knex.fn.now());
+		table.text('updated_at');
 	})
 	
         

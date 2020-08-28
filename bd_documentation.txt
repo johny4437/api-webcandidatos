@@ -104,7 +104,7 @@
     - visualizar
     - listar
     - apagar - desativar
-  - badges - coisas que o candidato é, tipo se é candidato a prefeito ou vereador, se é ficha limpa, por enquanto só pensei nesses, mas pode ser que colocamos mais, mais pra frente
+  - badges - (pronto !!))coisas que o candidato é, tipo se é candidato a prefeito ou vereador, se é ficha limpa, por enquanto só pensei nesses, mas pode ser que colocamos mais, mais pra frente
     - inserir
     - visualizar
     - listar

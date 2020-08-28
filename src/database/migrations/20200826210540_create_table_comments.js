@@ -7,6 +7,7 @@ exports.up = function(knex) {
       table.integer('post_id').notNullable();
       table.foreign('post_id').references('id').inTable('posts');
       table.timestamp('createdAt').defaultTo(knex.fn.now());
+      table.text('updated_at');
 
   })
 };
