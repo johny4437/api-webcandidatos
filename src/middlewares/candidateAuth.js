@@ -1,7 +1,7 @@
 const knex = require('../database/connection');
 
 
-exports.isAuth = (req, res, next) => {
+exports.isAuthCandidate = (req, res, next) => {
     // console.log(req.profile[0].id)
     //  console.log({parms:req.params.user_id})
      if(!(req.profile[0].id == req.params.candidate_id)){
@@ -14,7 +14,7 @@ exports.isAuth = (req, res, next) => {
 
 
 
-exports.userId = (req, res, next, id) =>{
+exports.candidateId = (req, res, next, id) =>{
     knex('candidates').select('id').where('id',id)
     .then(data =>{
         if(!data){

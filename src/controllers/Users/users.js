@@ -89,7 +89,7 @@ exports.singin= async (req, res) => {
     const { email, password } = req.body;
 
     
-    knex('candidates').where('email', email)
+    knex('users').where('email', email)
     .select('password','id', 'name')
     .first()
     .then(user =>{

@@ -6,6 +6,9 @@ const candidateRoute = require('./routes/candidatesRoute');
 const postsRoute = require('./routes/postsRoute');
 const usersRoute = require('./routes/userRoute');
 const propRoute = require('./routes/proposalRoute');
+const favRoute = require('./routes/favoritesRoute');
+const visitRoute = require('./routes/visitsRoute');
+const viewPostRoute = require('./routes/viewPostRoute');
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -16,7 +19,9 @@ app.use(candidateRoute);
 app.use(usersRoute);
 app.use(postsRoute);
 app.use(propRoute);
-
+app.use(favRoute);
+app.use(visitRoute);
+app.use(viewPostRoute);
 
 
 const PORT = process.env.PORT || 3333;

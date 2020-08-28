@@ -64,7 +64,7 @@
     - visualizar
     - listar
     - apagar - desativar
-  - favorite
+  - favorite (pronto!!)
     - inserir
     - visualizar
     - listar
@@ -74,17 +74,17 @@
     - visualizar
     - listar
     - apagar - desativar
-  - view_profile - salvar quando um usuário visualiza o perfil de um candidato
+  - view_profile - salvar quando um usuário visualiza o perfil de um candidato (pronto!!)
     - inserir
     - visualizar
     - listar
     - apagar - desativar
-  - view_post - salvar quando um usuário visualiza a postagem de um candidato
+  - view_post - salvar quando um usuário visualiza a postagem de um candidato (pronto !!)
     - inserir
     - visualizar
     - listar
     - apagar - desativar
-  - view_proposal - salvar quando o usuário visualiza as propostas do usuário
+  - view_proposal - salvar quando o usuário visualiza as propostas do candidato
     - inserir
     - visualizar
     - listar
@@ -111,6 +111,7 @@
     - apagar - desativar
   - payments - salva o pagamento gerado da inscrição do usuário no app
     - inserir
+    -platform(PICPAY OU MERCADO PAGO & PAG SEGURO)
     - visualizar
     - listar
     - apagar - desativar
