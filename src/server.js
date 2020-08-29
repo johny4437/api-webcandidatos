@@ -17,6 +17,7 @@ const paymentRoute = require('./routes/paymentRoute');
 const adminRoute = require('./routes/adminRoute');
 const likeRoute = require('./routes/likesRoute');
 const qrCodeRoute = require('./routes/qrCodeViewRoute')
+const shareWpRoute = require('./routes//shareWpRoute');
 
 app.use(cors());
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use(paymentRoute);
 app.use(adminRoute);
 app.use(likeRoute);
 app.use(qrCodeRoute);
+app.use(shareWpRoute)
 
 
 const PORT = process.env.PORT || 3333;

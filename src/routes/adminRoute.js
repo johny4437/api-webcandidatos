@@ -8,6 +8,7 @@ const { userId} = require('../middlewares/userAuth');
 const { candidateId} = require('../middlewares/candidateAuth');
 const {createCandidate, updateCandidate, removeCandidate, singin} = require('../controllers/Candidates/candidateController');
 const {createUser, updateUser} = require('../controllers/Users/users');
+const {createPost, updatePost, removePost} = require('../controllers/Posts/postController');
 const {createAdmin, singinAdmin, test} = require('../controllers/Admin/Admin')
 
 // ============================================================================================
@@ -35,7 +36,10 @@ route.delete('/admin/:admin_id/candidates/:candiate_id/remove', auth, isAuthAdmi
 
 route.post('/admin/:admin_id/users/create/', auth, isAuthAdmin,upload.single('photo'),createUser);
 route.put('/admin/:admin_id/users/:user_id/update', auth,isAuthAdmin, upload.single('photo'),updateUser);
-
+// ============================================================================================
+// POST ROUTE
+route.put('/admin/:admin_id/posts/:candidate_id/update', auth, isAuthAdmin, updatePost);
+route.delete('/admin/:admin_id/posts/:candidate_id/remove', auth, isAuthAdmin, removePost);
 
 route.param('admin_id', adminId);
 route.param('user_id', userId);

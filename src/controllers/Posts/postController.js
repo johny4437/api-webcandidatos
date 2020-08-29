@@ -7,7 +7,7 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 // CRIAR POST
 
-exports.create =  (req, res) => {
+exports.createPost =  (req, res) => {
     const candidate_id = req.params.candidate_id; 
     const { title, description } = req.body;
 
@@ -48,8 +48,9 @@ exports.create =  (req, res) => {
 }
 
 // UPDATE POST
-exports.update =  (req, res) => {
+exports.updatePost =  (req, res) => {
     const candidate_id = req.params.candidate_id; 
+    const post_id = req.headers.post_id
     const { title, description } = req.body;
 
  
@@ -79,7 +80,7 @@ exports.update =  (req, res) => {
     }
 
     console.log(post)
-    knex('posts').select('*').where('candidate_id', candidate_id).update(post).then(()=>{
+    knex('posts').where('candidate_id', candidate_id).andWhere('id', post_id).update(post).then(()=>{
         res.json('certo')
     }).catch((err)=>console.log(err))
  }
@@ -94,10 +95,13 @@ exports.update =  (req, res) => {
         })
 }
 
-exports.remove = (req, res) => {
+exports.removePost = (req, res) => {
     const id = req. params.candidate_id;
-    knex('posts').where('candidate_id', id).delete()
+    const post_id = req.headers.post_id
+    knex('posts').where('candidate_id', id).andWhere('id', post_id).delete()
     .then(() => {
         res.status(200).json()
+    }).catch(() =>{
+        res.status(400).json({msg:"THERE ARE NO POSTS TO DELETE"})
     })
 }

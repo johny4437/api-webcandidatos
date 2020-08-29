@@ -2,7 +2,7 @@ const route = require('express').Router();
 const multerConfig = require('../config/multer');
 const multer = require('multer')
 var upload = multer(multerConfig);
-const { test,createCandidate, readCandidates,updateCandidate, removeCandidate, singin, getOneCandidate} = require('../controllers/Candidates/candidateController');
+const { createCandidate, readCandidates,updateCandidate, removeCandidate, singin, getOneCandidate} = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
@@ -42,7 +42,7 @@ route.post('/hastags/:candidate_id',auth, isAuthCandidate, createHastag);
 route.get('/hastags', readHastags);
 
 
-route.post('/test',test);
+
 
 
 route.param('candidate_id', candidateId);

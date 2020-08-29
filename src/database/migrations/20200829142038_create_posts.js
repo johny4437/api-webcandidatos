@@ -8,6 +8,7 @@ return knex.schema.createTable('posts', function(table){
     table.text('photo');
     table.text('photo_url');
     table.text('video');
+    table.boolean('soft_delete').defaultTo(1);
     table.text('description');
     table.specificType('likes', 'text ARRAY');
     table.string('user_id');
