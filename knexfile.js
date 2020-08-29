@@ -6,9 +6,10 @@ require('dotenv').config({path:path.resolve (__dirname , './src/.env')})
   module.exports = {
 
     development:{
-      client:"pg",
+      client:process.env.DATABASE_CLIENT,
       connection:{
-        database:"cand3",
+        port:process.env.DATABASE_PORT,
+        database:process.env.DATABASE_NAME,
         user:process.env.DATABASE_USER,
         password:process.env.DATABASE_PASSWORD
       },
