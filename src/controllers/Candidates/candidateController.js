@@ -39,21 +39,33 @@ exports.createCandidate = async (req, res) =>{
           
           
           let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
-          var trueName = verifyLogin(newName);
-
-          console.log(trueName)
-         
-          // await knex('candidates').where('newName',name).
           // busca new name no banco
+          let candidateAux = await knex('candidates').where('login', newName).select('login')
+          
+          console.log(candidateAux)
+
+          let indiceLogin = 0
+
           // caso exista
-          // let i = 0
-          // do while {
-              // i = i + 1
+          if(candidateAux.length !== 0){
+            console.log(`>> login ${newName} ja existe.`)
+            
+            do{
+              indiceLogin++
+
               // busca no banco new name + - i
-              // 
-          // }(enquanto consulta retorna true)
-          // 
-          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/'+ newName);
+              console.log('>>> testando nome '+newName+'-'+indiceLogin)
+              candidateAux = await knex('candidates').where('login', newName+'-'+indiceLogin).select('login')
+
+            }while(candidateAux.length !== 0) //enquanto a consulta retorna true
+            //ou seja, enquanto existe candidato com o login gerado, gera um novo login incrementando o contador
+          }
+
+          const generatedLogin = (indiceLogin > 0) ? newName+'-'+indiceLogin : newName
+          
+          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/'+ newName); 
+         
+       
 
         
 
@@ -68,12 +80,12 @@ exports.createCandidate = async (req, res) =>{
             party,
             coalition,
             city,
-            login:newName,
+            login:generatedLogin,
             state,
             cpf,
             description,
             profile_pic: profile_pic[0].filename,
-            url_profile_pic:process.env.HOST_URL/profile_pic[0].filename,
+            url_profile_pic:process.env.HOST_URL+"/"+profile_pic[0].filename,
             cover_pic: cover_pic[0].filename,
             url_cover_pic: process.env.HOST_URL+"/"+cover_pic[0].filename,
             doc_selfie: doc_selfie[0].filename,
@@ -130,35 +142,7 @@ exports.getOneCandidate = async(req, res) =>{
   res.json(candidate)
 }
 
-// ==================================================================================================
-// BUSCA POR CIDADE OU ESTADO
-// ===================================================================================================
 
-/**
- * cidade/
- * by city = /candidates?city=saomateus
- * 
-//  */
-// exports.listCandidate = async (req, res) => {
-//   let {city, state} = req.query; 
-
-
-//   if(city){
-//     const user = await knex('candidates').select('id','name','party','coalition','description','city','state','number','url_profile_pic')
-//     .limit(6)
-//     .where('city','like',`%${city}%`)
-//     .orWhere('state','like',`%${state}%`)
-//     res.json({user})
-//   }else{
-//     res.json({message:"NOT FOUND"})
-
-//   }
-
-  
-            
-
-     
-// }
 
 
 // ==================================================================================================

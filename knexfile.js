@@ -8,7 +8,7 @@ require('dotenv').config({path:path.resolve (__dirname , './src/.env')})
     development:{
       client:"pg",
       connection:{
-        database:"cand3",
+        database:"cand5",
         user:process.env.DATABASE_USER,
         password:process.env.DATABASE_PASSWORD
       },
@@ -19,17 +19,5 @@ require('dotenv').config({path:path.resolve (__dirname , './src/.env')})
   
   
   
-
-
-  // development: {
-  //   client: 'sqlite3',
-  //   connection: {
-  //     filename: './src/database/db.sqlite3'
-  //   },
-  //   migrations:{
-  //     directory:'./src/database/migrations'
-  //   }
-  // }
-
   
 };

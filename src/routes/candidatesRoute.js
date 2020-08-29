@@ -1,7 +1,6 @@
 const route = require('express').Router();
 const multerConfig = require('../config/multer');
 const multer = require('multer')
-const qr = require('qr-image')
 var upload = multer(multerConfig);
 const { test,createCandidate, readCandidates,updateCandidate, removeCandidate, singin, getOneCandidate} = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
