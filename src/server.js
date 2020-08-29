@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path')
 const morgan = require('morgan');
+const cors = require(cors)
 const candidateRoute = require('./routes/candidatesRoute');
 const postsRoute = require('./routes/postsRoute');
 const usersRoute = require('./routes/userRoute');
@@ -16,6 +17,7 @@ const paymentRoute = require('./routes/paymentRoute');
 const adminRoute = require('./routes/adminRoute');
 const likeRoute = require('./routes/likesRoute');
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
