@@ -10,6 +10,7 @@ const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
 const {readVisits} = require('../controllers/ViewProfile/viewProfile')
 const {readViewPost} = require('../controllers/ViewPost/ViewPost')
 const {createBadge, readBadges, updateBadge} = require('../controllers/BadgeCandidates/Badges');
+const {createHastag, readHastags} = require('../controllers/Hastags/Hastags');
 
 var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
  {name:'cover_pic', maxCount:1},{name:'doc_selfie', maxCount:1},{name:'doc_identity', maxCount:1},
@@ -35,6 +36,12 @@ route.get('/candidates/view-post/:candidate_id', auth, isAuthCandidate, readView
 route.post('/candidates/badges/create/:candidate_id', auth, isAuthCandidate, createBadge);
 route.get('/badges', readBadges);
 route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
+// ===========================================================================================
+// HASTAGS
+
+route.post('/hastags/:candidate_id',auth, isAuthCandidate, createHastag);
+route.get('/hastags', readHastags);
+
 
 
 route.param('candidate_id', candidateId);

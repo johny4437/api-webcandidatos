@@ -37,7 +37,7 @@
       - doc_selfie - vamo pedir pra pessoa mandar uma selfie pra comprovar que é ela  (pronto!!)
       - doc_identity - vamo pedir foto da identidade  (pronto!!)
       - doc_files_candidate - pedir pra mandar foto do documento comprovando que é candidato (pronto!!)
-  - hashtags_perfil
+  - hashtags_perfil(pronto!!)
     - inserir
     - visualizar
     - listar
@@ -84,7 +84,7 @@
     - visualizar
     - listar
     - apagar - desativar
-  - view_proposal - salvar quando o usuário visualiza as propostas do candidato ()
+  - view_proposal - salvar quando o usuário visualiza as propostas do candidato (pronto !!)
     - inserir
     - visualizar
     - listar
@@ -99,7 +99,7 @@
     - visualizar
     - listar
     - apagar - desativar
-  - view_hashtag - salvar quando um usuário clicou em uma hashtag
+  - view_hashtag - salvar quando um usuário clicou em uma hashtag (PRONTO !!)
     - inserir
     - visualizar
     - listar

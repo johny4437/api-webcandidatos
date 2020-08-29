@@ -13,15 +13,18 @@ const{JWT_SECRET} = require('../../variables');
 exports.create = async(req, res) => {
     
     const { name, email } = req.body;
-    const id = crypto.randomBytes(4).toString('hex');
+    const id = crypto.randomBytes(10).toString('hex');
+    // concatena id com milisegundos
 
+    const newId = id + Date.now();
+    
     const hash=  hashPassword(req.body.password);
     const password = hash.hash;
     const profile_pic = req.file.filename;
     const photo_url = `http://127.0.0.1:3333/files/${profile_pic}`;
 
     const user = {
-        id,
+        id:newId,
         name, 
         email,
         password,

@@ -8,6 +8,7 @@ const {create, read, update , singin} = require('../controllers/Users/users');
 const {likeCreate} = require('../controllers/Users/Like');
 const {follow, unfollow} = require('../controllers/Users/Follow');
 const {createComments, readComments, updateComments, deleteComments} = require('../controllers/Users/Comments');
+const {createViewHastag} = require('../controllers/ViewHastags/ViewHastags');
 
 
 
@@ -29,6 +30,10 @@ route.post('/user/comment/create/:user_id', auth, isAuth, createComments );
 route.get('/comments', readComments);
 route.put('/comments/update/:user_id', auth, isAuth, updateComments);
 route.delete('/comments/delete/:user_id', auth, isAuth,deleteComments);
+// ======================================================================
+// VIEW HASTAGS
+route.post('/user/view-hastags/:user_id',auth, isAuth ,createViewHastag);
+
 
 
 route.param('user_id', userId);
