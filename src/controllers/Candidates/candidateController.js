@@ -11,14 +11,12 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createCandidate = async (req, res) =>{
 
-
+        console.log('> create candidate')
     
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
         const cand_id= crypto.randomBytes(10).toString('HEX')
         const id = cand_id + Date.now();
-      
-       
 
         const {
             name,
@@ -34,8 +32,6 @@ exports.createCandidate = async (req, res) =>{
     
           const files = req.files;
           let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
-          
-          
           
           
           let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
@@ -66,10 +62,7 @@ exports.createCandidate = async (req, res) =>{
           let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/'+ newName); 
          
        
-
-        
-
-         
+;         
         
           const candidate = {
             id,
