@@ -1,7 +1,7 @@
 const knex = require('../../database/connection');
 
 exports.likeCreate = async (req, res) => {
-    const post_id = req.params.post_id;
+    const post_id = req.headers.post_id;
     const user_id = req.params.user_id;
 
     await knex('likes').select('user_id').where('user_id', user_id)
@@ -20,5 +20,9 @@ exports.likeCreate = async (req, res) => {
                
 }
 exports.readLikes = (req, res) =>{
-    
+    const post_id = req.headers.post_id;
+    knex('likes').select('*').where('post_id', post_id)
+    .then(data => {
+        res.status(200).json(data)
+    })
 }

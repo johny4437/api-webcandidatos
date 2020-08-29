@@ -5,7 +5,7 @@ exports.up = function(knex) {
       table.text('body').notNullable();
 
       table.text('candidate_id').notNullable();
-      table.foreign('candidate_id').references('id').inTable('candidates');
+      // table.foreign('candidate_id').references('id').inTable('candidates');
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.text('updated_at');
 

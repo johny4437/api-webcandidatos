@@ -14,6 +14,7 @@ const badgeRoute = require('./routes/badgeRoute');
 const searchRoute = require('./routes/searchQueryRoute');
 const paymentRoute = require('./routes/paymentRoute');
 const adminRoute = require('./routes/adminRoute');
+const likeRoute = require('./routes/likesRoute');
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -32,6 +33,7 @@ app.use(badgeRoute);
 app.use(searchRoute);
 app.use(paymentRoute);
 app.use(adminRoute);
+app.use(likeRoute);
 
 
 const PORT = process.env.PORT || 3333;

@@ -1,6 +1,8 @@
 const knex = require('../../database/connection');
 const Formidable = require('formidable');
 var fs = require('fs')
+const path = require('path')
+require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 
 // CRIAR POST
@@ -32,7 +34,7 @@ exports.create =  (req, res) => {
         
         post.photo = path;
 
-       post.photo_url = `http://localhost:3333/files/${name}`;
+       post.photo_url = process.env.HOST_URL +"/"+name;
     }
 
     console.log(post)
@@ -90,4 +92,12 @@ exports.update =  (req, res) => {
         .then(data =>{
            res.json(data)
         })
+}
+
+exports.remove = (req, res) => {
+    const id = req. params.candidate_id;
+    knex('posts').where('candidate_id', id).delete()
+    .then(() => {
+        res.status(200).json()
+    })
 }

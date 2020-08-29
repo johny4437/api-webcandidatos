@@ -1,8 +1,11 @@
 const knex = require('../../database/connection');
 const crypto = require('crypto')
 const jwt  = require('jsonwebtoken');
+const path = require('path')
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
+require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
+
 
 exports.createAdmin = async (req, res) => {
     const { username} = req.body;
@@ -61,4 +64,7 @@ exports.singinAdmin =async (req, res) => {
       }
     })
 
+}
+exports.test = (req, res) => {
+    res.json(process.env.JWT_SECRET)
 }

@@ -8,12 +8,13 @@ const { userId} = require('../middlewares/userAuth');
 const { candidateId} = require('../middlewares/candidateAuth');
 const {createCandidate, updateCandidate, removeCandidate, singin} = require('../controllers/Candidates/candidateController');
 const {createUser, updateUser} = require('../controllers/Users/users');
-const {createAdmin, singinAdmin} = require('../controllers/Admin/Admin')
+const {createAdmin, singinAdmin, test} = require('../controllers/Admin/Admin')
 
 // ============================================================================================
 // ADMIN ROUTE
 route.post('/admin/create', createAdmin);
 route.post('/admin/singin',singinAdmin);
+
 
 
 

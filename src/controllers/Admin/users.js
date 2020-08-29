@@ -3,8 +3,6 @@ const  {hashPassword, comparePassword} = require('../../utils/passwordHash');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const{JWT_SECRET} = require('../../variables');
-const path = require('path')
-require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 // ESTRUTURA CRUD PRA USUÁRIO
 
@@ -12,7 +10,7 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 
 
-exports.createUser = async(req, res) => {
+exports.create = async(req, res) => {
     
     const { name, email } = req.body;
     const id = crypto.randomBytes(10).toString('hex');
@@ -23,7 +21,7 @@ exports.createUser = async(req, res) => {
     const hash=  hashPassword(req.body.password);
     const password = hash.hash;
     const profile_pic = req.file.filename;
-    const photo_url = process.env.HOST_URL+"/"+profile_pic;
+    const photo_url = `http://127.0.0.1:3333/files/${profile_pic}`;
 
     const user = {
         id:newId,
@@ -50,14 +48,14 @@ exports.createUser = async(req, res) => {
 
 };
 // READ CONTROLLER
-exports.readUser = async (req, res) => {
+exports.read = async (req, res) => {
     const users = await knex('users').select('*')
     res.status(200).json(users)
 };
 
 //UPDATE PROFILE
 
-exports.updateUser =  async (req, res) => {
+exports.update =  async (req, res) => {
    
     const id = req.params.user_id;
     const { name , email } = req.body;
@@ -66,7 +64,7 @@ exports.updateUser =  async (req, res) => {
 
     const profile_pic =  req.file.filename;
 
-    const photo_url = process.env.HOST_URL/profile_pic;
+    const photo_url = `http://127.0.0.1:3333/files/${profile_pic}`;
 
     const user = {
         id,
@@ -107,10 +105,10 @@ exports.singin= async (req, res) => {
                 .then(isAuthenticated=>{
                   if(!isAuthenticated){
                     res.status(401).json({
-                      error: "PASSWORD  MUST BE WRONG"
+                      error: "Unauthorized Access!"
                     })
                   }else{
-                    const token = jwt.sign({id:user.id}, process.env.JWT_SECRET)
+                    const token = jwt.sign({id:user.id}, JWT_SECRET)
                     //persistindo token
                     res.cookie('t', token, {expire:new Date() + 8888})
                     res.status(200).json({token, user})
