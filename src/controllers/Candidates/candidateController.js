@@ -38,9 +38,19 @@ exports.createCandidate = async (req, res) =>{
           const text = `http://192.168.0.110:3333/candidates/${id}`
           
           
-          const str = name+ " " + number;
-          let newName = str.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
-          let qrcode = await generateQRCODE('http://127.0.0.1:3333'+ newName);
+          
+          let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
+          // await knex('candidates').where('newName',name).
+          // busca new name no banco
+          // caso exista
+          // let i = 0
+          // do while {
+              // i = i + 1
+              // busca no banco new name + - i
+              // 
+          // }(enquanto consulta retorna true)
+          // 
+          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/'+ newName);
 
         
 
@@ -79,20 +89,16 @@ exports.createCandidate = async (req, res) =>{
        await knex('candidates').select('cpf','id').where('cpf',cpf)
           .then(usernameList=>{
               if(usernameList.length===0){
-                 
-
-                  
-
-                  
-              }else{
                 return knex('candidates')
-                  .returning('id')
-                  .insert(candidate)
-                  .then(()=>{
-                    return res.json({message:"user was inserted"})
-                });
-              }
+                .returning('id')
+                .insert(candidate)
+                .then(()=>{
+                  return res.json({message:"user was inserted"})
+              });
+            }else{
               return res.status(404).json({message:"user already exists"})
+              }
+             
           })
     
 };
