@@ -17,7 +17,8 @@ exports.up = function(knex) {
 		table.text('profile_pic')
 		table.text('url_profile_pic')
 		table.text('cover_pic')
-		table.text('url_cover_pic')
+		table.text('url_cover_pic');
+		table.text('login').notNullable();
 		table.text('doc_selfie')
 		table.text('url_doc_selfie')
 		table.text('doc_identity ')
@@ -27,7 +28,7 @@ exports.up = function(knex) {
 		table.text('status') //se a conta é verificada
         table.text('qrcode') //qr code que levará para o perfil do usuário
 		table.timestamp('created_at').defaultTo(knex.fn.now());
-		table.text('updated_at');
+		table.timestamp('updated_at');
 	})
 	
         

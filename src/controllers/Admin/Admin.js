@@ -6,7 +6,8 @@ const {hashPassword, comparePassword} = require('../../utils/passwordHash');
 
 exports.createAdmin = async (req, res) => {
     const { username} = req.body;
-    const password = hashPassword(req.body.password);
+    const hash = hashPassword(req.body.password);
+    const password = hash.hash;
     const id = Date.now() + crypto.randomBytes(8).toString('hex');
 
     const admin = {
@@ -29,5 +30,35 @@ exports.createAdmin = async (req, res) => {
         }
     })
 
+
+};
+
+exports.singinAdmin =async (req, res) => {
+    const {username, password} = req.body;
+    
+    await knex('admin').where('username', username)
+    .select('password','id')
+    .first()
+    .then(user =>{
+      if(!user){
+        res.status(401).json({
+          error: "USER NOT EXISTS"
+       })
+      }else{
+        return comparePassword(password, user.password)
+                .then(isAuthenticated=>{
+                  if(!isAuthenticated){
+                    res.status(401).json({
+                      error: "Unauthorized Access!"
+                    })
+                  }else{
+                    const token = jwt.sign({id:user.id}, JWT_SECRET)
+                    //persistindo token
+                    res.cookie('t', token, {expire:new Date() + 8888})
+                    res.status(200).json({token, user})
+                  }
+                })
+      }
+    })
 
 }
