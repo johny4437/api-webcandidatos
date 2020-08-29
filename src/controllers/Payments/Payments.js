@@ -37,3 +37,17 @@ exports.create = async (req, res) => {
        res.status(400).json({error:"NOT SAVED"})
    })
 }
+
+exports.read = (req, res) => {
+    const candidate_id = req.params.candidate_id;
+
+    knex('payments').select('*').where('candidate_id', candidate_id)
+    .then(dataPayment => {
+        if(dataPayment.length !== 0){
+            res.status(200).json(dataPayment);
+        }else{
+            res.status(404).json({msg:"THERE ARE NO PAYMENTS"})
+        }
+    })
+
+}

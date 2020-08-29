@@ -4,7 +4,7 @@ const multer = require('multer')
 var upload = multer(multerConfig);
 const auth = require('../middlewares/auth');
 const { userId, isAuth} = require('../middlewares/userAuth');
-const {create, read, update , singin} = require('../controllers/Users/users');
+const {createUser, readUser, updateUser , singin} = require('../controllers/Users/users');
 const {likeCreate} = require('../controllers/Users/Like');
 const {follow, unfollow} = require('../controllers/Users/Follow');
 const {createComments, readComments, updateComments, deleteComments} = require('../controllers/Users/Comments');
@@ -12,10 +12,10 @@ const {createViewHastag} = require('../controllers/ViewHastags/ViewHastags');
 
 
 
-route.post('/user/singup', upload.single('photo'), create);
+route.post('/user/singup', auth,isAuth,upload.single('photo'), createUser);
 route.post('/user/singin', singin);
-route.get('/user', read);
-route.put('/user/update/:user_id', auth, isAuth, upload.single('photo'), update);
+route.get('/user', readUser);
+route.put('/user/update/:user_id', auth, isAuth, upload.single('photo'), updateUser);
 // =================================================================================
 // like route
 route.post('/like/:post_id/:user_id', auth, isAuth, likeCreate);

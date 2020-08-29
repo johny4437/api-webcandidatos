@@ -1,4 +1,4 @@
-const knex = require('../../../database/connection');
+const knex = require('../../database/connection');
 
 exports.create = (req, res) => {
     const badge = req.body.badge;

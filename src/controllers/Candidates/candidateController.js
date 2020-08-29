@@ -10,7 +10,7 @@ const {generateQRCODE} = require('../../utils/qrGenerator')
 require('dotenv').config({path:'../../.env'})
 
 
-exports.create = async (req, res) =>{
+exports.createCandidate = async (req, res) =>{
 
 
     
@@ -100,7 +100,7 @@ exports.create = async (req, res) =>{
 // CONTROLLER DE LER TODOS OS CANDIDATOS
 // ================================================================================================
 
-exports.read = async (req, res) =>{
+exports.readCandidate = async (req, res) =>{
   
   const candidates = await knex('candidates')
   .select('id','name','party','coalition','description','city','state','number','url_profile_pic');
@@ -130,7 +130,7 @@ exports.getCandidate = async(req, res) =>{
  * by city = /candidates?city=saomateus
  * 
  */
-exports.list = async (req, res) => {
+exports.listCandidate = async (req, res) => {
   let {city, state} = req.query; 
 
 
@@ -155,7 +155,7 @@ exports.list = async (req, res) => {
 // ==================================================================================================
 //CONTROLER DE UPDATE DE PERFIL
 // ================================================================================================
-exports.update = async (req, res) => {
+exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
 
@@ -215,7 +215,7 @@ exports.update = async (req, res) => {
 // DELETE CONTROLLER
 // =============================================================================================
 
-exports.remove = (req,res) => {
+exports.removeCandidate = (req,res) => {
 
     const id = req.params.user_id;
     knex('candidates').select('*').where('id',id).delete();

@@ -3,7 +3,7 @@ const multerConfig = require('../config/multer');
 const multer = require('multer')
 const qr = require('qr-image')
 var upload = multer(multerConfig);
-const {create, read,update, remove, singin,list, getCandidate} = require('../controllers/Candidates/candidateController');
+const {createCandidate, readCandidate,updateCandidate, removeCandidate, singin,listCandidate, getCandidate} = require('../controllers/Candidates/candidateController');
 const {followers} = require('../controllers/Candidates/Followers');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
@@ -17,13 +17,13 @@ var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
  {name:'doc_files_candidate', maxCount:1}]);
 
 
-route.post('/candidates/singup', cpUpload, create);
-route.get('/candidates', read);
-route.get('/candidates/list',list)
+route.post('/candidates/singup', cpUpload, createCandidate);
+route.get('/candidates', readCandidate);
+route.get('/candidates/list',listCandidate)
 route.get('/candidates/:candidate_id', getCandidate);
-route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,update)
+route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,updateCandidate)
 route.post('/candidates/singin',singin);
-route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, remove);
+route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 
 route.get('/followers/:candidate_id', auth,isAuthCandidate,followers);
 // ================================================================

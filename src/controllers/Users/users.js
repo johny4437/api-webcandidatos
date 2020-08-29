@@ -10,7 +10,7 @@ const{JWT_SECRET} = require('../../variables');
 
 
 
-exports.create = async(req, res) => {
+exports.createUser = async(req, res) => {
     
     const { name, email } = req.body;
     const id = crypto.randomBytes(10).toString('hex');
@@ -48,14 +48,14 @@ exports.create = async(req, res) => {
 
 };
 // READ CONTROLLER
-exports.read = async (req, res) => {
+exports.readUser = async (req, res) => {
     const users = await knex('users').select('*')
     res.status(200).json(users)
 };
 
 //UPDATE PROFILE
 
-exports.update =  async (req, res) => {
+exports.updateUser =  async (req, res) => {
    
     const id = req.params.user_id;
     const { name , email } = req.body;
