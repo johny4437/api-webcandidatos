@@ -59,7 +59,7 @@ exports.createCandidate = async (req, res) =>{
 
           const generatedLogin = (indiceLogin > 0) ? newName+'-'+indiceLogin : newName
           
-          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/'+ newName); 
+          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/user/'+ newName); 
          
        
 ;         
