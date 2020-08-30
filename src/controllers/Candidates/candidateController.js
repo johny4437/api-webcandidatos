@@ -258,14 +258,4 @@ exports.singin = async (req, res) =>{
                                   })
                         }
                       })
-                      
-    
-      
-}
-exports.test = (req, res) =>{
-  var name = "JOHNY"
-  let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
-  var trueName = verifyLogin(newName);
-
-  console.log(trueName)
 }
