@@ -131,8 +131,8 @@ exports.getOneCandidate = async(req, res) =>{
   
   const id = req.params.candidate_id;
   
-  const candidate = await knex('candidates').where('id',id).select('*');
-  res.json(candidate)
+  const candidate = await knex('candidates').where('login',id).select('*');
+  res.json(candidate[0])
 }
 
 

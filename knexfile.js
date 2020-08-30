@@ -8,7 +8,7 @@ require('dotenv').config({path:path.resolve (__dirname , './src/.env')})
     development:{
       client:process.env.DATABASE_CLIENT,
       connection:{
-        database:"cand5",
+        database:"candidates",
         user:process.env.DATABASE_USER,
         password:process.env.DATABASE_PASSWORD
       },
