@@ -25,6 +25,7 @@ exports.createCandidate = async (req, res) =>{
             party,
             coalition,
             city,
+            telephone,
             state,
             cpf,
             description,
@@ -76,6 +77,7 @@ exports.createCandidate = async (req, res) =>{
             login:generatedLogin,
             state,
             cpf,
+            telephone,
             description,
             profile_pic: profile_pic[0].filename,
             url_profile_pic:process.env.HOST_URL+"/"+profile_pic[0].filename,
@@ -129,10 +131,24 @@ exports.readCandidates = async (req, res) =>{
  */
 exports.getOneCandidate = async(req, res) =>{
   
-  const id = req.params.candidate_id;
+  const login = req.params.login;
   
-  const candidate = await knex('candidates').where('id',id).select('*');
-  res.json(candidate)
+  const candidate = await knex('candidates').where('login',login).select('id', 
+  'name',
+  'party',
+  'coalition',
+  'description',
+  'city',
+  'state',
+  'number',
+ ' url_profile_pic',
+ 'url_cover_pic',
+ ' qrcode');
+  
+  
+
+
+res.json(candidate[0]);
 }
 
 

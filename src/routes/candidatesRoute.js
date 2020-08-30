@@ -19,7 +19,7 @@ var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
 route.post('/candidates/singup', cpUpload, createCandidate);
 route.get('/candidates', readCandidates);
 // route.get('/candidates/list',listCandidate)
-route.get('/candidates/:candidate_id', getOneCandidate);
+route.get('/candidates/:login', getOneCandidate);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,updateCandidate)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
