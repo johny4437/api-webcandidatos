@@ -9,6 +9,8 @@ const {generateQRCODE, verifyLogin} = require('../../utils/qrGenerator')
 require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 
+
+
 exports.createCandidate = async (req, res) =>{
 
         console.log('> create candidate')
@@ -31,8 +33,9 @@ exports.createCandidate = async (req, res) =>{
             description,
           } = req.body;
     
-          const files = req.files;
-          let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
+         
+          
+          // let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
           
           
           let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
@@ -79,16 +82,6 @@ exports.createCandidate = async (req, res) =>{
             cpf,
             telephone,
             description,
-            profile_pic: profile_pic[0].filename,
-            url_profile_pic:process.env.HOST_URL+"/"+profile_pic[0].filename,
-            cover_pic: cover_pic[0].filename,
-            url_cover_pic: process.env.HOST_URL+"/"+cover_pic[0].filename,
-            doc_selfie: doc_selfie[0].filename,
-            url_doc_selfie: process.env.HOST_URL+"/"+doc_selfie[0].filename,
-            doc_identity: doc_identity[0].filename,
-            url_doc_identity: process.env.HOST_URL+"/"+doc_identity[0].filename,
-            doc_files_candidate: doc_files_candidate[0].filename,
-            url_doc_files_candidate:process.env.HOST_URL+"/"+doc_files_candidate[0].filename,
             status: 'actived', //actived | deactived | verified
             qrcode:qrcode,
             
@@ -104,9 +97,11 @@ exports.createCandidate = async (req, res) =>{
                 .insert(candidate)
                 .then(()=>{
                   return res.json({message:"user was inserted"})
+                  
               });
             }else{
               return res.status(404).json({message:"user already exists"})
+
               }
              
           })
@@ -179,7 +174,7 @@ exports.updateCandidate = async (req, res) => {
     } = req.body;
 
     const files = req.files;
-    let { profile_pic, cover_pic } = files;
+    let { profile_pic, cover_pic } = files || null;
     
 // SÓ NÃO ATUALIZA O QRCODE
    
@@ -198,7 +193,7 @@ exports.updateCandidate = async (req, res) => {
       description,
       profile_pic: profile_pic[0].filename,
       url_profile_pic:`http://192.169.0.110/files/${profile_pic[0].filename}`,
-      cover_pic: cover_pic[0].filename,
+      cover_pic:cover_pic[0].filename,
       url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
       status: 'actived', //actived | deactived | verified
       updated_at:new Date()

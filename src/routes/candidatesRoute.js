@@ -16,7 +16,7 @@ var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
  {name:'doc_files_candidate', maxCount:1}]);
 
 
-route.post('/candidates/singup', cpUpload, createCandidate);
+route.post('/candidates/singup', createCandidate);
 route.get('/candidates', readCandidates);
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);
