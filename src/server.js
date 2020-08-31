@@ -1,4 +1,5 @@
 const express = require('express');
+let bodyParser = require('body-parser')
 const app = express();
 const path = require('path')
 const morgan = require('morgan');
@@ -20,9 +21,13 @@ const qrCodeRoute = require('./routes/qrCodeViewRoute')
 const shareWpRoute = require('./routes//shareWpRoute');
 
 app.use(cors());
-app.use(express.json());
 
+app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
+// app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({ extended: true }))
+
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
 
 app.use(morgan("dev"));
