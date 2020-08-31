@@ -96,13 +96,13 @@ exports.createCandidate = async (req, res) =>{
                 return knex('candidates')
                 .insert(candidate)
                 .then(()=>{
-                  return res.json({message:"user was inserted"})
+                  return res.json({message:"USER WAS INSERTED"})
                   
               });
             }else{
-              return res.status(404).json({message:"user already exists"})
+              return res.status(404).json({message:"USER ALREADY EXISTS"})
 
-              }
+              };
              
           })
     
