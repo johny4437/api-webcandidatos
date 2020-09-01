@@ -15,8 +15,10 @@ exports.createCandidate = async (req, res) =>{
 
         console.log('> create candidate')
     
-        const hash = hashPassword(req.body.password);
-        const password = hash.hash;
+       const hash = hashPassword(req.body.password);
+      
+       const password = hash.hash
+        console.log(password)
         const cand_id= crypto.randomBytes(10).toString('HEX')
         const id = cand_id + Date.now();
 
@@ -98,7 +100,7 @@ exports.createCandidate = async (req, res) =>{
                 .then(()=>{
                   return res.json({message:"USER WAS INSERTED"})
                   
-              });
+              })
             }else{
               return res.status(404).json({message:"USER ALREADY EXISTS"})
 
@@ -248,7 +250,8 @@ exports.singin = async (req, res) =>{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)
                                       //persistindo token
                                       res.cookie('t', token, {expire:new Date() + 8888})
-                                      res.status(200).json({token, user})
+                                      let usr= user.name
+                                      res.status(200).json({token, usr})
                                     }
                                   })
                         }
