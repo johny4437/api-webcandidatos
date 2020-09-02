@@ -10,8 +10,10 @@ exports.up = function(knex) {
 		table.text('party');
 		table.text('coalition');
 		table.text('telephone').notNullable();
-		table.text('city').notNullable()
-		table.text('state').notNullable()
+		table.integer('city_id').notNullable()
+		table.foreign('city_id').references('id').inTable('cidades');
+		table.integer('state_id').notNullable()
+		table.foreign('state_id').references('id').inTable('estados');
 		table.text('cpf').unique().notNullable()
 		table.text('number');
 		table.text('description');
