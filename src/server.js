@@ -1,5 +1,5 @@
-const express = require('express');
-let bodyParser = require('body-parser')
+const express = require('express')
+
 const app = express();
 
 const path = require('path')
@@ -33,9 +33,7 @@ app.use(express.urlencoded({extended:true}));
 // app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
-app.use
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}))
+
 
 
 // app.use(express.json());
