@@ -2,7 +2,7 @@
 const knex = require('knex')
 exports.up = function(knex) {
   return knex.schema.createTable('users', function(table){
-      table.text('id').primary().notNullable();
+      table.string('id').primary().notNullable();
       table.text('name').notNullable();
       table.text('email').notNullable();
       table.text('password').notNullable();

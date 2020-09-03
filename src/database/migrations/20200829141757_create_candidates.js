@@ -9,17 +9,19 @@ exports.up = function(knex) {
         table.text('password').notNullable()
 		table.text('party');
 		table.text('coalition');
-		table.text('telephone').notNullable();
-		table.text('city').notNullable()
-		table.text('state').notNullable()
-		table.text('cpf').unique().notNullable()
+    table.text('telephone').notNullable();    
+		table.integer('city_id').notNullable()
+		table.foreign('city_id').references('id').inTable('cidades');
+		table.integer('state_id').notNullable()
+		table.foreign('state_id').references('id').inTable('estados');
+		table.string('cpf').unique().notNullable()
 		table.text('number');
 		table.text('description');
 		table.text('profile_pic')
 		table.text('url_profile_pic')
 		table.text('cover_pic')
 		table.text('url_cover_pic');
-		table.text('login').unique().notNullable();
+		table.string('login').unique().notNullable();
 		table.text('doc_selfie');
 		table.text('url_doc_selfie');
 		table.text('doc_identity ');

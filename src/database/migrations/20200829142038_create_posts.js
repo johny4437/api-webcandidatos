@@ -10,7 +10,7 @@ return knex.schema.createTable('posts', function(table){
     table.text('video');
     table.boolean('soft_delete').defaultTo(1);
     table.text('description');
-    table.specificType('likes', 'text ARRAY');
+    //table.specificType('likes', 'text ARRAY');
     table.string('user_id');
     table.foreign('user_id').references('id').inTable('users')
     table.string('candidate_id').notNullable();
