@@ -17,6 +17,11 @@ var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
 
 
 route.post('/candidates/singup', createCandidate);
+
+// route.post('/candidates/singup', (req, res) => {
+//   console.log('field: '+req.body.email)
+// });
+
 route.get('/candidates', readCandidates);
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);

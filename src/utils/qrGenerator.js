@@ -3,7 +3,7 @@ const path = require('path')
 const knex = require('../database/connection');
 async function generateQRCODE(text){
     try {
-     const url =  await QR.toDataURL(text,{ errorCorrectionLevel: 'H' })
+     const url =  await QR.toDataURL(text,{ errorCorrectionLevel: 'H', width: 600 })
         return  url
       } catch (err) {
         console.error(err)

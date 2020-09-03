@@ -13,25 +13,24 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createCandidate = async (req, res) =>{
 
+      const {
+        name,
+        email,
+        city,
+        state,
+        cpf,
+        telephone
+      } = req.body;
+
         console.log('> create candidate')
-    
+        console.log('> name: '+email)
+
         const hash = hashPassword(req.body.password);
         const password = hash.hash;
         const cand_id= crypto.randomBytes(10).toString('HEX')
         const id = cand_id + Date.now();
 
-        const {
-            name,
-            email,
-            number,
-            party,
-            coalition,
-            city,
-            telephone,
-            state,
-            cpf,
-            description,
-          } = req.body;
+        
     
          
           
@@ -64,24 +63,18 @@ exports.createCandidate = async (req, res) =>{
           const generatedLogin = (indiceLogin > 0) ? newName+'-'+indiceLogin : newName
           
           let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/user/'+ newName); 
-         
-       
-;         
-        
+          
+
           const candidate = {
             id,
             name,
             email,
             password,
-            number,
-            party,
-            coalition,
             city,
-            login:generatedLogin,
+            login: generatedLogin,
             state,
             cpf,
             telephone,
-            description,
             status: 'actived', //actived | deactived | verified
             qrcode:qrcode,
             
