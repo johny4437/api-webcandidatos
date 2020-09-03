@@ -91,7 +91,7 @@ exports.createCandidate = async (req, res) =>{
                 .then(()=>{
                   return res.json({message:"USER WAS INSERTED"})
                   
-              });
+              })
             }else{
               return res.status(404).json({message:"USER ALREADY EXISTS"})
 
@@ -160,8 +160,8 @@ exports.updateCandidate = async (req, res) => {
       number,
       party,
       coalition,
-      city,
-      state,
+      city_id,
+      state_id,
       cpf,
       description,
     } = req.body;
@@ -180,8 +180,8 @@ exports.updateCandidate = async (req, res) => {
       number,
       party,
       coalition,
-      city,
-      state,
+      city_id,
+      state_id,
       cpf,
       description,
       profile_pic: profile_pic[0].filename,
@@ -241,7 +241,8 @@ exports.singin = async (req, res) =>{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)
                                       //persistindo token
                                       res.cookie('t', token, {expire:new Date() + 8888})
-                                      res.status(200).json({token, user})
+                                      let usr= user.name
+                                      res.status(200).json({token, usr})
                                     }
                                   })
                         }
