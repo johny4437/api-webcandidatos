@@ -28,9 +28,9 @@ exports.createCandidate = async (req, res) =>{
             number,
             party,
             coalition,
-            city,
+            city_id,
             telephone,
-            state,
+            state_id,
             cpf,
             description,
           } = req.body;
@@ -78,9 +78,9 @@ exports.createCandidate = async (req, res) =>{
             number,
             party,
             coalition,
-            city,
+            city_id,
             login:generatedLogin,
-            state,
+            state_id,
             cpf,
             telephone,
             description,
@@ -116,10 +116,55 @@ exports.createCandidate = async (req, res) =>{
 exports.readCandidates = async (req, res) =>{
   
   const candidates = await knex('candidates')
-  .select('id','name','party','coalition','description','city','state','number','url_profile_pic');
+  .select('id','name','party','coalition','description','city_id','state_id','number','url_profile_pic');
   res.json(candidates)
   
+};
+
+// =================================================================================================
+// BUSCAPARA ATUALIZAÇÂO PERFIL BASICO
+// ================================================================================================
+/**
+ * passa o id do candidato
+ */
+exports.getSomeCandidateData = async (req, res) =>{
+  const candidate_id = req.params.candidate_id;
+  
+  const candidate = await knex('candidates').where('id',candidate_id).select('id', 
+  'id',
+  'name',
+  'email',
+  'cpf',
+  'telephone',
+  'city_id',
+  'state_id',
+  );
+   
+  const stateId = candidate[0].state_id;
+  const cityId = candidate[0].city_id;
+  const st = await knex('estados').select('estado').where('id', stateId);
+  const ci= await knex('cidades').select('cidade').where('id',cityId);
+
+  var name = candidate[0].name;
+  var email = candidate[0].email;
+  var cpf = candidate[0].cpf;
+  var telephone = candidate[0].telephone;
+  var city = ci[0].cidade;
+  var state = st[0].estado;
+
+  const user = {
+    name,
+    email,
+    cpf,
+    telephone,
+    city, 
+    state
+  }
+
+  res.status(200).json(user)
+
 }
+
 // =================================================================================================
 // BUSCA POR UM CANDIDATO ESPECIFICO
 // ================================================================================================
@@ -131,21 +176,47 @@ exports.getOneCandidate = async(req, res) =>{
   const login = req.params.login;
   
   const candidate = await knex('candidates').where('login',login).select('id', 
+  'id',
   'name',
   'party',
   'coalition',
   'description',
-  'city',
-  'state',
+  'city_id',
+  'state_id',
   'number',
  ' url_profile_pic',
  'url_cover_pic',
  ' qrcode');
   
-  
+  const stateId = candidate[0].state_id;
+  console.log(stateId)
+  const cityId = candidate[0].city_id;
+const st = await knex('estados').select('estado').where('id', stateId);
+const ci= await knex('cidades').select('cidade').where('id',cityId);
 
+var name = candidate[0].name;
+var party = candidate[0].party;
+var coalition = candidate[0].coalition;
+var description = candidate[0].description;
+var number = candidate[0].number;
+var  profile_pic = candidate[0].url_profile_pic;
+var  cover_pic =candidate[0].url_cover_pic;
+var city = ci[0].cidade;
+var state = st[0].estado
 
-res.json(candidate[0]);
+const user = {
+  name,
+  party,
+  coalition,
+  description,
+  number,
+  city,
+  state,
+  profile_pic,
+  cover_pic
+}
+  res.json(user)
+
 }
 
 
@@ -232,7 +303,7 @@ exports.singin = async (req, res) =>{
   
 
     knex('candidates').where('email', email)
-                      .select('password','id', 'name')
+                      .select('password','id', 'name','login')
                       .first()
                       .then(user =>{
                         if(!user){
@@ -250,10 +321,16 @@ exports.singin = async (req, res) =>{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)
                                       //persistindo token
                                       res.cookie('t', token, {expire:new Date() + 8888})
-                                      let usr= user.name
-                                      res.status(200).json({token, usr})
+                                     
+                                      let id= user.id
+                                      
+                                      res.status(200).json({token, id})
                                     }
                                   })
                         }
                       })
+};
+exports.singout = (req, res) =>{
+  res.clearCookie("t");
+  return res.json({message:"Singout Sucess"});
 }

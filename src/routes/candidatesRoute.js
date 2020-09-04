@@ -2,7 +2,16 @@ const route = require('express').Router();
 const multerConfig = require('../config/multer');
 const multer = require('multer')
 var upload = multer(multerConfig);
-const { createCandidate, readCandidates,updateCandidate, removeCandidate, singin, getOneCandidate} = require('../controllers/Candidates/candidateController');
+const { 
+    createCandidate, 
+    readCandidates,
+    updateCandidate, 
+    removeCandidate, 
+    singin,
+    singout, 
+    getOneCandidate,
+    getSomeCandidateData
+} = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
@@ -20,6 +29,8 @@ route.post('/candidates/singup', createCandidate);
 route.get('/candidates', readCandidates);
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);
+route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
+route.get('/candidates/singout',singout);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,updateCandidate)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
