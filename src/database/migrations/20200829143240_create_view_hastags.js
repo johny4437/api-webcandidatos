@@ -5,7 +5,7 @@ exports.up = function(knex) {
 
       table.string('user_id').notNullable();
       table.integer('hastag_id').notNullable();
-      table.foreign('hastag_id').references('id').inTable('hastags');
+      //table.foreign('hastag_id').references('id').inTable('hastags');
 
       table.timestamp('created_at').defaultTo(knex.fn.now());
   })

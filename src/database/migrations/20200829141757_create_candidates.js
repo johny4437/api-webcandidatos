@@ -3,17 +3,17 @@ const knex = require('knex');
 exports.up = function(knex) {
 
     return knex.schema.createTable('candidates', table =>{
-        table.string('id').primary()
+    table.string('id').primary()
 		table.text('name').notNullable()
 		table.text('email').notNullable()
-        table.text('password').notNullable()
+    table.text('password').notNullable()
 		table.text('party');
 		table.text('coalition');
     table.text('telephone').notNullable();    
 		table.integer('city').notNullable()
-		table.foreign('city').references('id').inTable('cidades');
+		//table.foreign('city').references('id').inTable('cidades');
 		table.integer('state').notNullable()
-		table.foreign('state').references('id').inTable('estados');
+		//table.foreign('state').references('id').inTable('estados');
 		table.string('cpf').unique().notNullable()
 		table.text('number');
 		table.text('description');
