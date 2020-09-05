@@ -121,22 +121,26 @@ exports.getOneCandidate = async(req, res) =>{
   
   const login = req.params.login;
   
-  const candidate = await knex('candidates').where('login',login).select('id', 
-  'name',
-  'party',
-  'coalition',
-  'description',
-  'city',
-  'state',
-  'number',
- ' url_profile_pic',
- 'url_cover_pic',
- ' qrcode');
-  
-  
-
-
-res.json(candidate[0]);
+  const candidate = await knex('candidates')
+                            .where('login',login)
+                            .select(
+                                'id', 
+                                'name',
+                                'party',
+                                'coalition',
+                                'description',
+                                'city',
+                                'state',
+                                'number',
+                                'url_profile_pic',
+                                'url_cover_pic',
+                                'qrcode');
+  if(candidate.length == 0){
+    res.status(404).json({
+      error: "candidate not found"
+    });    
+  }
+  res.status(200).json(candidate[0]);
 }
 
 
