@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 
 //FUNÇÃO PARA GERAR HASH DE PASSWORD
-function hashPassword(password){
-    var salt = bcrypt.genSaltSync(8);
-    var hash = bcrypt.hashSync(password);
+async function hashPassword(password){
+    var salt = await  bcrypt.genSaltSync(8);
+    var hash =  await bcrypt.hashSync(password);
     return {
         salt:salt,
         hash:hash,

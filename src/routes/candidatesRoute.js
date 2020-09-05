@@ -20,9 +20,7 @@ const {readViewPost} = require('../controllers/ViewPost/ViewPost')
 const {createBadge, readBadges, updateBadge} = require('../controllers/BadgeCandidates/Badges');
 const {createHastag, readHastags} = require('../controllers/Hastags/Hastags');
 
-var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
- {name:'cover_pic', maxCount:1},{name:'doc_selfie', maxCount:1},{name:'doc_identity', maxCount:1},
- {name:'doc_files_candidate', maxCount:1}]);
+var cpUpload = upload.single('profile_pic');
 
 
 route.post('/candidates/singup', createCandidate);
@@ -31,11 +29,11 @@ route.get('/candidates', readCandidates);
 route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
 route.get('/candidates/singout',singout);
-route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,updateCandidate)
+route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
-// numero de seguidore
-route.get('/followers/:candidate_id', auth,isAuthCandidate,getFollowers);
+// numero de seguidores
+route.get('/followers/:candidate_id',getFollowers);
 // ================================================================
 // VER NUMERO DE VISITANTES
 route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)

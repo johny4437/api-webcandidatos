@@ -131,8 +131,8 @@ exports.getSomeCandidateData = async (req, res) =>{
   const candidate_id = req.params.candidate_id;
   
   const candidate = await knex('candidates').where('id',candidate_id).select('id', 
-  'id',
   'name',
+  'password',
   'email',
   'cpf',
   'telephone',
@@ -146,6 +146,7 @@ exports.getSomeCandidateData = async (req, res) =>{
   const ci= await knex('cidades').select('cidade').where('id',cityId);
 
   var name = candidate[0].name;
+  var password=candidate[0].password;
   var email = candidate[0].email;
   var cpf = candidate[0].cpf;
   var telephone = candidate[0].telephone;
@@ -155,6 +156,7 @@ exports.getSomeCandidateData = async (req, res) =>{
   const user = {
     name,
     email,
+    password,
     cpf,
     telephone,
     city, 
@@ -221,7 +223,6 @@ const user = {
 
 
 
-
 // ==================================================================================================
 //CONTROLER DE UPDATE DE PERFIL
 // ================================================================================================
@@ -229,9 +230,17 @@ exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
 
-    
+  let password ="";
+   
+
+if(req.body.password === 'undefined'){
+  let hash_2 = await knex('candidates').select('password').where('id', id);
+  password = hash_2.password;
+}else{
+
   const hash = hashPassword(req.body.password);
-  const password = hash.hash;
+   password = hash.hash;
+}
  
 
   const {
@@ -240,14 +249,15 @@ exports.updateCandidate = async (req, res) => {
       number,
       party,
       coalition,
+      profile_pic,
+      cover_pic,
       city_id,
       state_id,
       cpf,
       description,
     } = req.body;
 
-    const files = req.files;
-    let { profile_pic, cover_pic } = files || null;
+
     
 // SÓ NÃO ATUALIZA O QRCODE
    
@@ -264,10 +274,10 @@ exports.updateCandidate = async (req, res) => {
       state_id,
       cpf,
       description,
-      profile_pic: profile_pic[0].filename,
-      url_profile_pic:`http://192.169.0.110/files/${profile_pic[0].filename}`,
-      cover_pic:cover_pic[0].filename,
-      url_cover_pic:`http://192.168.0.110/files/${cover_pic[0].filename}`,
+      profile_pic: profile_pic,
+      url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
+      cover_pic:cover_pic,
+      url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
       status: 'actived', //actived | deactived | verified
       updated_at:new Date()
     };
