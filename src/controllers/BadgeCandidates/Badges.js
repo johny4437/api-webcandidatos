@@ -2,7 +2,7 @@ const knex = require('../../database/connection');
 
 exports.createBadge = (req, res) => {
     const candidate_id = req.params.candidate_id;
-    const badge_id = req.headers.badge_id;
+    const badge_id = req.params.badge_id;
 
     const badge = {
         candidate_id,

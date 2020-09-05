@@ -10,7 +10,8 @@ const {
     singin,
     singout, 
     getOneCandidate,
-    getSomeCandidateData
+    getSomeCandidateData,
+    updatePassword
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
@@ -30,6 +31,7 @@ route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
 route.get('/candidates/singout',singout);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
+route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // numero de seguidores
@@ -41,7 +43,7 @@ route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)
 route.get('/candidates/view-post/:candidate_id', auth, isAuthCandidate, readViewPost);
 //======================================================================================
 // BADGES ROUTE
-route.post('/candidates/badges/create/:candidate_id', auth, isAuthCandidate, createBadge);
+route.post('/candidates/badges/:badge_id/create/:candidate_id', auth, isAuthCandidate, createBadge);
 route.get('/badges', readBadges);
 route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
 // ===========================================================================================

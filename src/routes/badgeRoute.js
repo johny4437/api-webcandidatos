@@ -1,7 +1,8 @@
 const route = require('express').Router();
-const {create} = require('../controllers/Badges/Badges');
+const {create, readBadge} = require('../controllers/Badges/Badges');
 
-route.post('/badges/create', create);
+route.post('/badge/create', create);
+route.get('/badge/list', readBadge);
 
 
 module.exports = route;

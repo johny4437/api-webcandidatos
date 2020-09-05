@@ -14,9 +14,9 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 exports.createCandidate = async (req, res) =>{
 
         console.log('> create candidate')
-    
+
        const hash = hashPassword(req.body.password);
-      
+      console.log(req.body.password)
        const password = hash.hash
         console.log(password)
         const cand_id= crypto.randomBytes(10).toString('HEX')
@@ -132,7 +132,6 @@ exports.getSomeCandidateData = async (req, res) =>{
   
   const candidate = await knex('candidates').where('id',candidate_id).select('id', 
   'name',
-  'password',
   'email',
   'cpf',
   'telephone',
@@ -146,7 +145,6 @@ exports.getSomeCandidateData = async (req, res) =>{
   const ci= await knex('cidades').select('cidade').where('id',cityId);
 
   var name = candidate[0].name;
-  var password=candidate[0].password;
   var email = candidate[0].email;
   var cpf = candidate[0].cpf;
   var telephone = candidate[0].telephone;
@@ -156,7 +154,6 @@ exports.getSomeCandidateData = async (req, res) =>{
   const user = {
     name,
     email,
-    password,
     cpf,
     telephone,
     city, 
@@ -230,17 +227,9 @@ exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
 
-  let password ="";
-   
+ 
 
-if(req.body.password === 'undefined'){
-  let hash_2 = await knex('candidates').select('password').where('id', id);
-  password = hash_2.password;
-}else{
 
-  const hash = hashPassword(req.body.password);
-   password = hash.hash;
-}
  
 
   const {
@@ -256,17 +245,13 @@ if(req.body.password === 'undefined'){
       cpf,
       description,
     } = req.body;
+    try {
 
 
-    
-// SÓ NÃO ATUALIZA O QRCODE
-   
-  
-    const candidate = {
+       const candidate = {
       id,
       name,
       email,
-      password,
       number,
       party,
       coalition,
@@ -281,15 +266,51 @@ if(req.body.password === 'undefined'){
       status: 'actived', //actived | deactived | verified
       updated_at:new Date()
     };
-   
-    
-
-  await knex('candidates').select('id')
+      await knex('candidates').select('id')
         .where('id', id)
         .update(candidate)
 
     res.status(200).json({message:"User updated"})
-};
+
+
+      
+    } catch(e) {
+      
+      res.status(404).json("NOT UPDATED")
+    }
+// SÓ NÃO ATUALIZA O QRCODE
+   }
+  // ========================================================================================
+   // UPDATE PASSWORD
+   // ===================================================================================
+
+   exports.updatePassword = async (req, res) =>{
+    
+     const candidate_id = req.params.candidate_id;
+      const password = hashPassword(req.body.password);
+      const hash = password.hash;
+
+      const candidate = {
+        password:hash
+      }
+      try {
+        await knex('candidates').select('id')
+        .where('id', candidate_id)
+        .update(candidate)
+
+    res.status(200).json({message:"PASSWORD UPDATED"})
+      } catch (error) {
+        res.status(400).json({message:"ERROR TO UPDATE PASSWORD "})
+      }
+
+
+     
+
+
+   }
+    
+
+
 
 // =============================================================================================
 // DELETE CONTROLLER
