@@ -1,6 +1,7 @@
 
 const knex = require('../../database/connection');
 const crypto = require('crypto')
+const nodemailer = require('nodemailer');
 const path = require('path')
 const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
@@ -16,7 +17,7 @@ exports.createCandidate = async (req, res) =>{
         console.log('> create candidate')
 
        const hash = hashPassword(req.body.password);
-      console.log(req.body.password)
+      //console.log(req.body.password)
        const password = hash.hash
         console.log(password)
         const cand_id= crypto.randomBytes(10).toString('HEX')
@@ -361,6 +362,97 @@ exports.singin = async (req, res) =>{
                         }
                       })
 };
+
+
+exports.forgotPassword = async (req, res) =>{
+  const { email } =  req.body;
+
+  const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'johnyanastaciods@gmail.com',
+    pass: '97909001' // naturally, replace both with your real credentials or an application-specific password
+  }
+});
+  
+
+
+  await knex('candidates').select('*').where('email', email)
+  .then(candidateData =>{
+    if(candidateData.length === 0) {
+      res.status(400).json({msg: "USER WITH THIS EMAIL DON'T EXIST"})
+    }else {
+
+      const token =jwt.sign({id: candidateData.id}, process.env.JWT_SECRET)
+       res.cookie('t', token, {expire:new Date() + 8888})
+      const mailOptions = {
+      from: 'noreply@webcandidatos.com.br',
+      to: email,
+      subject: 'Recuperaçao de Senha',
+      html: `<h4>Clique no link abaixo para trocar a senha:</h4>
+        <p>http://127.0.0.1:3333/password/forgot/${token}</p>`
+
+        };
+        console.log(candidateData[0].email);
+          const cand = {
+            resetLink:token
+          }
+
+        return knex('candidates').select('*').where('email',candidateData[0].email)
+        .update(cand)
+        .then(() =>{
+
+          transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+              res.status(400).json(error);
+        } else {
+         res.status(200).json('Email sent Follow the instructions');
+        }});
+
+        })
+        
+
+      
+    }
+  })
+};
+
+exports.resetPassword = async(req, res) =>{
+  const token = req.params.token
+  const newPass = hashPassword(req.body.newPass);
+  const password = newPass.hash
+
+
+  if(token){
+    jwt.verify(token, process.env.JWT_SECRET, (err,decoded)=>{
+      if(err){
+        res.status(400).json({msg:"Incorretd ToKen or This Token is Expired"})
+      }
+       return knex('candidates').select('*').where('resetLink', token).then(data =>{
+          if(data.length === 0){
+              res.status(400).json({error:"This Token is Invalid"})
+            }else {
+
+              const cand ={
+                password:password
+              }
+
+              return knex('candidates').select('*').where('id', data[0].id).update(cand)
+              .then(()=>res.status(200).json({msg:"Password was Updated"}))
+              .catch((err)=>res.status(400).json({error:"Password was not Updated"}))
+      
+            }
+  })
+
+    })
+  }else {
+    res.status(400).json({error:"Authentication Failed"})
+  }
+
+ 
+}
+
+
 exports.singout = (req, res) =>{
   res.clearCookie("t");
   return res.json({message:"Singout Sucess"});

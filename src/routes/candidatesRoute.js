@@ -11,7 +11,9 @@ const {
     singout, 
     getOneCandidate,
     getSomeCandidateData,
-    updatePassword
+    updatePassword,
+    forgotPassword,
+    resetPassword
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
@@ -34,6 +36,10 @@ route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandida
 route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
+// ESQECEU SENHA
+route.put('/candidates/forgot/password', forgotPassword);
+route.put('/password/forgot/:token', resetPassword);
+
 // numero de seguidores
 route.get('/followers/:candidate_id',getFollowers);
 // ================================================================
@@ -51,6 +57,7 @@ route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
 
 route.post('/hastags/:candidate_id',auth, isAuthCandidate, createHastag);
 route.get('/hastags', readHastags);
+
 
 
 
