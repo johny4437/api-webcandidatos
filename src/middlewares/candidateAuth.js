@@ -22,7 +22,7 @@ exports.candidateId = (req, res, next, id) =>{
         }
          req.profile = data
 
-        // console.log({userInitial:data})
+         console.log({userInitial:data})
 
         next();
     })

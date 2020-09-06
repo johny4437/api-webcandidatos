@@ -10,9 +10,9 @@ exports.up = function(knex) {
 		table.text('party');
 		table.text('coalition');
     table.text('telephone').notNullable();    
-		table.integer('city').notNullable()
+		table.integer('city_id').notNullable()
 		//table.foreign('city').references('id').inTable('cidades');
-		table.integer('state').notNullable()
+		table.integer('state_id').notNullable()
 		//table.foreign('state').references('id').inTable('estados');
 		table.string('cpf').unique().notNullable()
 		table.text('number');
@@ -28,6 +28,7 @@ exports.up = function(knex) {
 		table.text('url_doc_identity');
 		table.text('doc_files_candidate');
 		table.text('url_doc_files_candidate');
+		table.string('resetLink').defaultTo("");
 		table.text('status') //se a conta é verificada
         table.text('qrcode') //qr code que levará para o perfil do usuário
 		table.timestamp('created_at').defaultTo(knex.fn.now());

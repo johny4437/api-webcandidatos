@@ -3,7 +3,7 @@ exports.up = function(knex) {
   return knex.schema.createTable('badges', function(table){
       table.increments();
       table.text('badge');
-      table.timestamp('created_at').defaultTo(knex.fn.now());
+      table.timestamp('created_at');
       table.text('updated_at');
 
   })
