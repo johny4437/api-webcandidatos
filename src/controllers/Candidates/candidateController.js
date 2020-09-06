@@ -188,30 +188,30 @@ exports.getOneCandidate = async(req, res) =>{
   const stateId = candidate[0].state_id;
   console.log(stateId)
   const cityId = candidate[0].city_id;
-const st = await knex('estados').select('estado').where('id', stateId);
-const ci= await knex('cidades').select('cidade').where('id',cityId);
+  const st = await knex('estados').select('estado').where('id', stateId);
+  const ci= await knex('cidades').select('cidade').where('id',cityId);
 
-var name = candidate[0].name;
-var party = candidate[0].party;
-var coalition = candidate[0].coalition;
-var description = candidate[0].description;
-var number = candidate[0].number;
-var  profile_pic = candidate[0].url_profile_pic;
-var  cover_pic =candidate[0].url_cover_pic;
-var city = ci[0].cidade;
-var state = st[0].estado
+  var name = candidate[0].name;
+  var party = candidate[0].party;
+  var coalition = candidate[0].coalition;
+  var description = candidate[0].description;
+  var number = candidate[0].number;
+  var  profile_pic = candidate[0].url_profile_pic;
+  var  cover_pic =candidate[0].url_cover_pic;
+  var city = ci[0].cidade;
+  var state = st[0].estado
 
-const user = {
-  name,
-  party,
-  coalition,
-  description,
-  number,
-  city,
-  state,
-  profile_pic,
-  cover_pic
-}
+  const user = {
+    name,
+    party,
+    coalition,
+    description,
+    number,
+    city,
+    state,
+    profile_pic,
+    cover_pic
+  }
   res.json(user)
 
 }
