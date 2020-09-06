@@ -174,8 +174,8 @@ exports.getSomeCandidateData = async (req, res) =>{
 exports.getOneCandidate = async(req, res) =>{
   
   const login = req.params.login;
-  
-  const candidate = await knex('candidates').where('login',login).select('id', 
+  try {
+     const candidate = await knex('candidates').where('login',login).select('id', 
   'id',
   'name',
   'party',
@@ -188,10 +188,10 @@ exports.getOneCandidate = async(req, res) =>{
  'url_cover_pic',
  ' qrcode');
   
-  const stateId = candidate[0].state_id;
-  console.log(stateId)
-  const cityId = candidate[0].city_id;
-const st = await knex('estados').select('estado').where('id', stateId);
+ const stateId = candidate[0].state_id;
+ console.log(stateId)
+ const cityId = candidate[0].city_id;
+ const st = await knex('estados').select('estado').where('id', stateId);
 const ci= await knex('cidades').select('cidade').where('id',cityId);
 
 var name = candidate[0].name;
@@ -217,9 +217,14 @@ const user = {
 }
   res.json(user)
 
+
+
+  } catch(e) {
+    res.status(400).json({error:"USER NOT FOUND"})
+  }
+ 
+
 }
-
-
 
 // ==================================================================================================
 //CONTROLER DE UPDATE DE PERFIL
@@ -406,7 +411,7 @@ exports.forgotPassword = async (req, res) =>{
         if (error) {
               res.status(400).json(error);
         } else {
-         res.status(200).json('Email sent Follow the instructions');
+         res.status(200).json('Email sent. Follow the instructions');
         }});
 
         })

@@ -12,13 +12,13 @@ const favRoute = require('./routes/favoritesRoute');
 const visitRoute = require('./routes/visitsRoute');
 const viewPostRoute = require('./routes/viewPostRoute');
 const bodyParser = require("body-parser");
-const viewProposalRoute = require('./routes/viewProposalRoute')
+const viewProposalRoute = require('./routes/viewProposalRoute');
 const badgeRoute = require('./routes/badgeRoute');
 const searchRoute = require('./routes/searchQueryRoute');
 const paymentRoute = require('./routes/paymentRoute');
 const adminRoute = require('./routes/adminRoute');
 const likeRoute = require('./routes/likesRoute');
-const qrCodeRoute = require('./routes/qrCodeViewRoute')
+const qrCodeRoute = require('./routes/qrCodeViewRoute');
 const shareWpRoute = require('./routes//shareWpRoute');
 const addressRoute = require('./routes/addressRoute');
 const route = require('./routes/addressRoute');
@@ -26,7 +26,7 @@ const route = require('./routes/addressRoute');
 app.use(cors());
 app.use(morgan("dev"));
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
-app.use
+
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended:true}))
 
