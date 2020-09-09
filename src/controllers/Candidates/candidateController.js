@@ -86,24 +86,22 @@ exports.createCandidate = async (req, res) =>{
             qrcode:qrcode,
             
           };
-
-        
-          
-
-       await knex('candidates').select('cpf','id').where('cpf',cpf)
+      
+       await knex('candidates')
+          .select('cpf','id')
+          .where('cpf', cpf)
+          .orWhere('email', email)
           .then(usernameList=>{
               if(usernameList.length===0){
                 return knex('candidates')
                 .insert(candidate)
                 .then(()=>{
-                  return res.json({message:"USER WAS INSERTED"})
-                  
+                  return res.json({message:"USER WAS INSERTED"})                  
               })
             }else{
-              return res.status(404).json({message:"USER ALREADY EXISTS"})
-
-              };
-             
+              console.log('usuário ja existe')
+              return res.status(400).json({message:"USER ALREADY EXISTS"})
+            };
           })
     
 };
@@ -128,37 +126,64 @@ exports.readCandidates = async (req, res) =>{
 exports.getSomeCandidateData = async (req, res) =>{
   const candidate_id = req.params.candidate_id;
   
-  const candidate = await knex('candidates').where('id',candidate_id).select('id', 
-  'name',
-  'email',
-  'cpf',
-  'telephone',
-  'city_id',
-  'state_id',
-  );
-   
-  const stateId = candidate[0].state_id;
-  const cityId = candidate[0].city_id;
-  const st = await knex('estados').select('estado').where('id', stateId);
-  const ci= await knex('cidades').select('cidade').where('id',cityId);
+  try{
+    const candidate = await knex('candidates').where('id',candidate_id).select(
+      'id', 
+    'name',
+    'email',
+    'cpf',
+    'telephone',
+    'city_id',
+    'state_id',
+    'login',
+    'qrcode',
+    'number',
+    'party',
+    'coalition',
+    'description'
+    );
+    
+    const stateId = candidate[0].state_id;
+    const cityId = candidate[0].city_id;
+    const st = await knex('estados').select('estado').where('id', stateId);
+    const ci= await knex('cidades').select('cidade').where('id',cityId);
 
-  var name = candidate[0].name;
-  var email = candidate[0].email;
-  var cpf = candidate[0].cpf;
-  var telephone = candidate[0].telephone;
-  var city = ci[0].cidade;
-  var state = st[0].estado;
+    let name = candidate[0].name;
+    let email = candidate[0].email;
+    let cpf = candidate[0].cpf;
+    let telephone = candidate[0].telephone;
+    let city = ci[0].cidade;
+    let state = st[0].estado;
+    let login = candidate[0].login;
+    let qrcode = candidate[0].qrcode;
+    let number = candidate[0].number;
+    let party = candidate[0].party;
+    let coalition = candidate[0].coalition;
+    let description = candidate[0].description;
 
-  const user = {
-    name,
-    email,
-    cpf,
-    telephone,
-    city, 
-    state
+    const user = {
+      name,
+      email,
+      cpf,
+      telephone,
+      city, 
+      state,
+      login,
+      qrcode,
+      state_id: stateId,
+      city_id: cityId,
+      number,
+      party,
+      coalition,
+      description
+    }
+    console.log(user)
+    res.status(200).json(user)
+  }catch(e){
+    res.status(400).json({error:"USER NOT FOUND"})
   }
 
-  res.status(200).json(user)
+  
 
 }
 
@@ -171,8 +196,8 @@ exports.getSomeCandidateData = async (req, res) =>{
 exports.getOneCandidate = async(req, res) =>{
   
   const login = req.params.login;
-  
-  const candidate = await knex('candidates').where('login',login).select('id', 
+  try {
+     const candidate = await knex('candidates').where('login',login).select('id', 
   'id',
   'name',
   'party',
@@ -181,8 +206,8 @@ exports.getOneCandidate = async(req, res) =>{
   'city_id',
   'state_id',
   'number',
- ' url_profile_pic',
- 'url_cover_pic',
+ ' profile_pic',
+ 'cover_pic',
  ' qrcode');
   
   const stateId = candidate[0].state_id;
@@ -191,15 +216,15 @@ exports.getOneCandidate = async(req, res) =>{
   const st = await knex('estados').select('estado').where('id', stateId);
   const ci= await knex('cidades').select('cidade').where('id',cityId);
 
-  var name = candidate[0].name;
-  var party = candidate[0].party;
-  var coalition = candidate[0].coalition;
-  var description = candidate[0].description;
-  var number = candidate[0].number;
-  var  profile_pic = candidate[0].url_profile_pic;
-  var  cover_pic =candidate[0].url_cover_pic;
-  var city = ci[0].cidade;
-  var state = st[0].estado
+  let name = candidate[0].name;
+  let party = candidate[0].party;
+  let coalition = candidate[0].coalition;
+  let description = candidate[0].description;
+  let number = candidate[0].number;
+  let  profile_pic = candidate[0].profile_pic;
+  let  cover_pic =candidate[0].cover_pic;
+  let city = ci[0].cidade;
+  let state = st[0].estado
 
   const user = {
     name,
@@ -212,11 +237,20 @@ exports.getOneCandidate = async(req, res) =>{
     profile_pic,
     cover_pic
   }
+
+  console.log(user)
+
+
   res.json(user)
 
+
+
+  } catch(e) {
+    res.status(400).json({error:"USER NOT FOUND"})
+  }
+ 
+
 }
-
-
 
 // ==================================================================================================
 //CONTROLER DE UPDATE DE PERFIL
@@ -403,7 +437,7 @@ exports.forgotPassword = async (req, res) =>{
         if (error) {
               res.status(400).json(error);
         } else {
-         res.status(200).json('Email sent Follow the instructions');
+         res.status(200).json('Email sent. Follow the instructions');
         }});
 
         })

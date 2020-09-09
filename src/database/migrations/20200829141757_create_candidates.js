@@ -5,7 +5,7 @@ exports.up = function(knex) {
     return knex.schema.createTable('candidates', table =>{
     table.string('id').primary()
 		table.text('name').notNullable()
-		table.text('email').notNullable()
+		table.string('email').unique().notNullable()
     table.text('password').notNullable()
 		table.text('party');
 		table.text('coalition');
