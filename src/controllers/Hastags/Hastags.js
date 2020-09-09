@@ -12,16 +12,16 @@ exports.createHastag = (req, res) => {
     }
 
     knex('hastags').select('*').where('hastag', hastag)
-    .then(data => {
-        if(data.length === 0){
-            return knex('hastags').insert(hastagData)
-            .then(() =>{
-                res.status(200).json({msg:"HASTAG CREATED"})
-            })
-        }else{
-            res.status(404).json({msg:"HASTAG ALREADY EXISTS"})
-        }
-    })
+      .then(data => {
+          if(data.length === 0){
+              return knex('hastags').insert(hastagData)
+              .then(() =>{
+                  res.status(200).json({msg:"HASTAG CREATED"})
+              })
+          }else{
+              res.status(404).json({msg:"HASTAG ALREADY EXISTS"})
+          }
+      })
 };
 
 exports.readHastags = (req, res) => {

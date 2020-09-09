@@ -14,12 +14,12 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createCandidate = async (req, res) =>{
 
-        console.log('> create candidate')
+        //console.log('> create candidate')
 
        const hash = hashPassword(req.body.password);
       //console.log(req.body.password)
        const password = hash.hash
-        console.log(password)
+        //console.log(password)
         const cand_id= crypto.randomBytes(10).toString('HEX')
         const id = cand_id + Date.now();
 
@@ -45,19 +45,19 @@ exports.createCandidate = async (req, res) =>{
           // busca new name no banco
           let candidateAux = await knex('candidates').where('login', newName).select('login')
           
-          console.log(candidateAux)
+          //console.log(candidateAux)
 
           let indiceLogin = 0
 
           // caso exista
           if(candidateAux.length !== 0){
-            console.log(`>> login ${newName} ja existe.`)
+            //console.log(`>> login ${newName} ja existe.`)
             
             do{
               indiceLogin++
 
               // busca no banco new name + - i
-              console.log('>>> testando nome '+newName+'-'+indiceLogin)
+              //console.log('>>> testando nome '+newName+'-'+indiceLogin)
               candidateAux = await knex('candidates').where('login', newName+'-'+indiceLogin).select('login')
 
             }while(candidateAux.length !== 0) //enquanto a consulta retorna true
@@ -99,7 +99,7 @@ exports.createCandidate = async (req, res) =>{
                   return res.json({message:"USER WAS INSERTED"})                  
               })
             }else{
-              console.log('usuário ja existe')
+              //console.log('usuário ja existe')
               return res.status(400).json({message:"USER ALREADY EXISTS"})
             };
           })
@@ -140,13 +140,15 @@ exports.getSomeCandidateData = async (req, res) =>{
     'number',
     'party',
     'coalition',
-    'description'
+    'description',
+    'profile_pic'
     );
     
     const stateId = candidate[0].state_id;
     const cityId = candidate[0].city_id;
     const st = await knex('estados').select('estado').where('id', stateId);
-    const ci= await knex('cidades').select('cidade').where('id',cityId);
+    const ci = await knex('cidades').select('cidade').where('id',cityId);
+    const hs = await knex('hastags').select('hastag').where('candidate_id', candidate_id)
 
     let name = candidate[0].name;
     let email = candidate[0].email;
@@ -160,6 +162,17 @@ exports.getSomeCandidateData = async (req, res) =>{
     let party = candidate[0].party;
     let coalition = candidate[0].coalition;
     let description = candidate[0].description;
+    let profile_pic = candidate[0].profile_pic;
+
+    let hastags = []
+    hs.map(hashtag => {
+      hastags.push(hashtag.hastag)
+    });
+    
+    if(hs.length > 0) hastags[0] = '#'+hastags[0]
+
+    console.log('candidate_id', candidate_id)
+    console.log('hastags: '+hastags)
 
     const user = {
       name,
@@ -175,9 +188,11 @@ exports.getSomeCandidateData = async (req, res) =>{
       number,
       party,
       coalition,
-      description
+      description,
+      profile_pic,
+      hastags: hastags.join(' #')
     }
-    console.log(user)
+    //console.log(user)
     res.status(200).json(user)
   }catch(e){
     res.status(400).json({error:"USER NOT FOUND"})
@@ -211,7 +226,7 @@ exports.getOneCandidate = async(req, res) =>{
  ' qrcode');
   
   const stateId = candidate[0].state_id;
-  console.log(stateId)
+  //console.log(stateId)
   const cityId = candidate[0].city_id;
   const st = await knex('estados').select('estado').where('id', stateId);
   const ci= await knex('cidades').select('cidade').where('id',cityId);
@@ -238,12 +253,9 @@ exports.getOneCandidate = async(req, res) =>{
     cover_pic
   }
 
-  console.log(user)
-
+  //console.log(user)
 
   res.json(user)
-
-
 
   } catch(e) {
     res.status(400).json({error:"USER NOT FOUND"})
@@ -259,11 +271,6 @@ exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
 
- 
-
-
- 
-
   const {
       name,
       email,
@@ -276,29 +283,79 @@ exports.updateCandidate = async (req, res) => {
       state_id,
       cpf,
       description,
+      hastags,
     } = req.body;
-    try {
+    try {      
+      
+      let hashtagsArr = hastags.split('#')
+      console.log(hashtagsArr)
+      hashtagsArr = hashtagsArr.map(s => s.trim()) //tira os espaços em branco
+      console.log(hashtagsArr)
 
+      console.log('> update candidate')
+      console.log(hashtagsArr)
+      //excluir hashtags que o candidato escolheu não usar mais, ou seja,
+      //as hashtags que não estão no vetor hashtagsArr porém estão no banco
+      const hs = await knex('hastags').select('*')
+                        .where('candidate_id', id)
+      console.log('> hs '+hs.length)
+      hs.map(async hsOld => {
+        console.log('hsold: '+hsOld)
+        ///caso não esteja no array, exclui
+        if(!hashtagsArr.includes(hsOld.hastag)){
+          console.log('>> remove '+hsOld.id)
+          console.log('>> hashtag '+hsOld.hastag)
+          await knex('hastags').where({'id': hsOld.id}).del();
+        }
+      })
 
-       const candidate = {
-      id,
-      name,
-      email,
-      number,
-      party,
-      coalition,
-      city_id,
-      state_id,
-      cpf,
-      description,
-      profile_pic: profile_pic,
-      url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
-      cover_pic:cover_pic,
-      url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
-      status: 'actived', //actived | deactived | verified
-      updated_at:new Date()
+      
+      //para cada uma das hashtags, salva na tabela
+      hashtagsArr.map(hastag => {
+        console.log('> salva '+hastag)
+        if(hastag !== '' && hastag !== ' '){
+          const hastagData = {
+            hastag: hastag.trim(),
+            candidate_id: id
+          }
+      
+          knex('hastags').select('*')
+            .where('hastag', hastag)
+            .where('candidate_id', id)
+            .then(data => {
+                if(data.length === 0){
+                    knex('hastags').insert(hastagData)
+                      .then(() =>{
+                          //res.status(200).json({msg:"HASTAG CREATED"})
+                      })
+                }else{
+                    //res.status(404).json({msg:"HASTAG ALREADY EXISTS"})
+                }
+            })
+        }
+        
+      })
+
+      const candidate = {
+        id,
+        name,
+        email,
+        number,
+        party,
+        coalition,
+        city_id,
+        state_id,
+        cpf,
+        description,
+        profile_pic: profile_pic,
+        url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
+        cover_pic:cover_pic,
+        url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
+        status: 'actived', //actived | deactived | verified
+        updated_at:new Date()
     };
-      await knex('candidates').select('id')
+
+    await knex('candidates').select('id')
         .where('id', id)
         .update(candidate)
 
@@ -308,7 +365,7 @@ exports.updateCandidate = async (req, res) => {
       
     } catch(e) {
       
-      res.status(404).json("NOT UPDATED")
+      res.status(404).json("NOT UPDATED "+e)
     }
 // SÓ NÃO ATUALIZA O QRCODE
    }
@@ -424,7 +481,7 @@ exports.forgotPassword = async (req, res) =>{
         <p>http://127.0.0.1:3333/password/forgot/${token}</p>`
 
         };
-        console.log(candidateData[0].email);
+        //console.log(candidateData[0].email);
           const cand = {
             resetLink:token
           }
