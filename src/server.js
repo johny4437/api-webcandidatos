@@ -37,8 +37,8 @@ app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
 // app.use(bodyParser.urlencoded({extended:true}))
 
 
-app.use(express.json({limit: '50mb', extended: true}));
-app.use(express.urlencoded( {limit: '50mb', extended: true}));
+app.use(express.json({limit: '2100mb', extended: true}));
+app.use(express.urlencoded( {limit: '200mb', extended: true, parameterLimit: 200000}));
 app.use(candidateRoute);
 app.use(usersRoute);
 app.use(postsRoute);

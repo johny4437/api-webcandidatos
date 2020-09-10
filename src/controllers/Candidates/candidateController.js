@@ -141,7 +141,8 @@ exports.getSomeCandidateData = async (req, res) =>{
     'party',
     'coalition',
     'description',
-    'profile_pic'
+    'profile_pic',
+    'badges'
     );
     
     const stateId = candidate[0].state_id;
@@ -163,6 +164,7 @@ exports.getSomeCandidateData = async (req, res) =>{
     let coalition = candidate[0].coalition;
     let description = candidate[0].description;
     let profile_pic = candidate[0].profile_pic;
+    let badges = candidate[0].badges;
 
     let hastags = []
     hs.map(hashtag => {
@@ -175,22 +177,10 @@ exports.getSomeCandidateData = async (req, res) =>{
     console.log('hastags: '+hastags)
 
     const user = {
-      name,
-      email,
-      cpf,
-      telephone,
-      city, 
-      state,
-      login,
-      qrcode,
+      ...candidate[0],
       state_id: stateId,
       city_id: cityId,
-      number,
-      party,
-      coalition,
-      description,
-      profile_pic,
-      hastags: hastags.join(' #')
+      hastags: hastags.join(' #'),
     }
     //console.log(user)
     res.status(200).json(user)
@@ -284,6 +274,7 @@ exports.updateCandidate = async (req, res) => {
       cpf,
       description,
       hastags,
+      badges
     } = req.body;
     try {      
       
@@ -352,7 +343,8 @@ exports.updateCandidate = async (req, res) => {
         cover_pic:cover_pic,
         url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
         status: 'actived', //actived | deactived | verified
-        updated_at:new Date()
+        updated_at:new Date(),
+        badges
     };
 
     await knex('candidates').select('id')

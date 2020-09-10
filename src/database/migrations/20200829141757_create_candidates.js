@@ -16,7 +16,8 @@ exports.up = function(knex) {
 		//table.foreign('state').references('id').inTable('estados');
 		table.string('cpf').unique().notNullable()
 		table.text('number');
-		table.text('description');
+    table.text('description');
+    table.text('badges'); //vamos usar as badges estáticamente por enquanto
 		table.text('profile_pic')
 		table.text('url_profile_pic')
 		table.text('cover_pic')
@@ -30,7 +31,7 @@ exports.up = function(knex) {
 		table.text('url_doc_files_candidate');
 		table.string('resetLink').defaultTo("");
 		table.text('status') //se a conta é verificada
-        table.text('qrcode') //qr code que levará para o perfil do usuário
+    table.text('qrcode') //qr code que levará para o perfil do usuário
 		table.timestamp('created_at').defaultTo(knex.fn.now());
 		table.timestamp('updated_at');
 	})
