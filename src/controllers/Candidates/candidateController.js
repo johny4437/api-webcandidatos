@@ -7,6 +7,9 @@ const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
 const {generateQRCODE, verifyLogin} = require('../../utils/qrGenerator')
+const fs = require('fs');
+const {imageDecode} = require('../../utils/decodeFunctionImage')
+
 require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 
@@ -184,8 +187,8 @@ exports.getOneCandidate = async(req, res) =>{
   'city_id',
   'state_id',
   'number',
- ' url_profile_pic',
- 'url_cover_pic',
+ ' profile_pic',
+ 'cover_pic',
  ' qrcode');
   
  const stateId = candidate[0].state_id;
@@ -199,8 +202,8 @@ var party = candidate[0].party;
 var coalition = candidate[0].coalition;
 var description = candidate[0].description;
 var number = candidate[0].number;
-var  profile_pic = candidate[0].url_profile_pic;
-var  cover_pic =candidate[0].url_cover_pic;
+var  profile_pic = candidate[0].profile_pic;
+var  cover_pic =candidate[0].cover_pic;
 var city = ci[0].cidade;
 var state = st[0].estado
 
@@ -232,7 +235,7 @@ const user = {
 exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
-
+  // const imageMimeTypes = ['image/png','image/jpeg', 'image/jpg', 'image/gif'];
  
 
 
@@ -244,17 +247,17 @@ exports.updateCandidate = async (req, res) => {
       number,
       party,
       coalition,
-      profile_pic,
-      cover_pic,
       city_id,
       state_id,
+      profile_pic,
+      cover_pic,
       cpf,
       description,
     } = req.body;
-    try {
 
 
-       const candidate = {
+
+    const candidate = {
       id,
       name,
       email,
@@ -265,13 +268,18 @@ exports.updateCandidate = async (req, res) => {
       state_id,
       cpf,
       description,
-      profile_pic: profile_pic,
-      url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
-      cover_pic:cover_pic,
+      profile_pic,
+      url_cover_pic:`http://192.168.0.110/files/${profile_pic}`,
+      cover_pic,
       url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
       status: 'actived', //actived | deactived | verified
-      updated_at:new Date()
-    };
+ 
+   }
+
+    try {
+
+
+       
       await knex('candidates').select('id')
         .where('id', id)
         .update(candidate)
@@ -389,6 +397,7 @@ exports.forgotPassword = async (req, res) =>{
     }else {
 
       const token =jwt.sign({id: candidateData.id}, process.env.JWT_SECRET)
+      
        res.cookie('t', token, {expire:new Date() + 8888})
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
@@ -411,7 +420,13 @@ exports.forgotPassword = async (req, res) =>{
         if (error) {
               res.status(400).json(error);
         } else {
-         res.status(200).json('Email sent. Follow the instructions');
+          let msg = 'Email sent. Follow the instructions';
+          var data = {
+            msg,
+            token
+          }
+         res.status(200).json(data);
+
         }});
 
         })
@@ -424,9 +439,8 @@ exports.forgotPassword = async (req, res) =>{
 
 exports.resetPassword = async(req, res) =>{
   const token = req.params.token
-  const newPass = hashPassword(req.body.newPass);
-  const password = newPass.hash
-
+  
+ console.log(token)
 
   if(token){
     jwt.verify(token, process.env.JWT_SECRET, (err,decoded)=>{
@@ -438,13 +452,7 @@ exports.resetPassword = async(req, res) =>{
               res.status(400).json({error:"This Token is Invalid"})
             }else {
 
-              const cand ={
-                password:password
-              }
-
-              return knex('candidates').select('*').where('id', data[0].id).update(cand)
-              .then(()=>res.status(200).json({msg:"Password was Updated"}))
-              .catch((err)=>res.status(400).json({error:"Password was not Updated"}))
+              res.status(200).json({msg:"This Token is Valid"})
       
             }
   })
@@ -455,10 +463,39 @@ exports.resetPassword = async(req, res) =>{
   }
 
  
+};
+
+exports.setNewForgotPass = async(req, res) =>{
+  const newPass = hashPassword(req.body.newPass);
+  const password = newPass.hash
+const cand ={password:password}
+
+              await knex('candidates').select('*').where('id', data[0].id).update(cand)
+              .then(()=>res.status(200).json({msg:"Password was Updated"}))
+              .catch((err)=>res.status(400).json({error:"Password was not Updated"}))
+
+
+
+
+
+
+
+
 }
 
-
-exports.singout = (req, res) =>{
+exports.singout=() =>{
   res.clearCookie("t");
   return res.json({message:"Singout Sucess"});
 }
+
+
+
+
+
+
+
+
+
+
+
+

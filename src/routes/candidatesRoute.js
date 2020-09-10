@@ -13,7 +13,9 @@ const {
     getSomeCandidateData,
     updatePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    setNewForgotPass
+    
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
@@ -28,6 +30,8 @@ var cpUpload = upload.single('profile_pic');
 
 route.post('/candidates/singup', createCandidate);
 route.get('/candidates', readCandidates);
+
+
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
@@ -38,8 +42,8 @@ route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
 route.put('/candidates/forgot/password', forgotPassword);
-route.put('/password/forgot/:token', resetPassword);
-
+route.get('/password/reset/:token', resetPassword);
+route.put('/update/forgot/password',setNewForgotPass)
 // numero de seguidores
 route.get('/followers/:candidate_id',getFollowers);
 // ================================================================
