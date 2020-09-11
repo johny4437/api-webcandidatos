@@ -24,6 +24,11 @@ const addressRoute = require('./routes/addressRoute');
 const route = require('./routes/addressRoute');
 const fileUpload = require('express-fileupload')
 
+
+
+
+
+
 app.use(cors());
 app.use(morgan("dev"));
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
@@ -34,7 +39,8 @@ app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
 
 app.use(express.json({limit: '50mb', extended: true}));
 app.use(express.urlencoded( {limit: '50mb', extended: true}));
-app.use(fileUpload());
+
+// app.use(fileUpload());
 app.use(candidateRoute);
 app.use(usersRoute);
 app.use(postsRoute);

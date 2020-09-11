@@ -328,14 +328,16 @@ exports.updateCandidate = async (req, res) => {
 // UPDATE PROFILE PIC
 // =======================================================================================
 exports.updateProfilePic = async (req, res) =>{
-  const {profile_pic} = req.body.profile_pic;
+  const profile_pic = req.body.profile_pic;
   const id = req.params.candidate_id;
   const cand = {
     profile_pic
   }
+  console.log(profile_pic)
 
 await knex('candidates').select('*').where('id',id).then(data=>{
   if(data.length !==0){
+    // console.log(data[0].id)
     return knex('candidates').where('id', data[0].id).update(cand).then(()=>{
       res.status(200).json({msg:"PROFILE PIC UPDATED"})
     }).catch(()=>{

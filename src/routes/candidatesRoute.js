@@ -14,6 +14,7 @@ const {
     updatePassword,
     forgotPassword,
     resetPassword,
+    updateProfilePic,
     setNewForgotPass
     
 } = require('../controllers/Candidates/candidateController');
@@ -38,6 +39,7 @@ route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandida
 route.get('/candidates/singout',singout);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
 route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
+route.put('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate,updateProfilePic)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
