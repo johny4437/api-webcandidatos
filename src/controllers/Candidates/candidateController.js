@@ -92,6 +92,24 @@ exports.createCandidate = async (req, res) =>{
             qrcode:qrcode,
             
           };
+          // DADOS PARA ENVIAR EMAIL
+
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'johnyanastaciods@gmail.com',
+              pass: '97909001' // naturally, replace both with your real credentials or an application-specific password
+            }
+          });
+          const mailOptions = {
+              from: 'noreply@webcandidatos.com.br',
+              to: email,
+              subject: 'Conta criada com sucesso',
+              text:`${name} seu cadastro foi feito com sucesso.\n\n`
+              +'Por Favor Clique no link abaixo para entrar em sua conta.\n\n'
+              +`http://127.0.0.1:3000/login`
+
+        };
 
         
           
@@ -102,7 +120,18 @@ exports.createCandidate = async (req, res) =>{
                 return knex('candidates')
                 .insert(candidate)
                 .then(()=>{
-                  return res.json({message:"USER WAS INSERTED"})
+
+                  transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                           res.status(400).json(error);
+                    } else {
+                        let msg = 'Email sent. Follow the instructions';
+                        var data = {
+                          msg
+                        }
+                         res.status(200).json(data);
+
+                }});   
                   
               })
             }else{
@@ -329,6 +358,7 @@ exports.updateCandidate = async (req, res) => {
 // =======================================================================================
 exports.updateProfilePic = async (req, res) =>{
   const profile_pic = req.body.profile_pic;
+  console.log(req.body)
   const id = req.params.candidate_id;
   const cand = {
     profile_pic
@@ -426,9 +456,11 @@ exports.forgotPassword = async (req, res) =>{
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
       to: email,
-      subject: 'Recuperaçao de Senha',
-      html: `<h4>Clique no link abaixo para trocar a senha:</h4>
-        <p>http://127.0.0.1:3000/password/reset/${token}</p>`
+      subject: 'Resetar Senha',
+      text:'Sua solicitação para resetar senha Foi efetuada com sucesso.\n\n'
+      +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
+      +`http://127.0.0.1:3000/password/reset/${token}.\n\n`
+      +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
         console.log(candidateData[0].email);
