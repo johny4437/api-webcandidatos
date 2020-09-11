@@ -1,4 +1,5 @@
 const knex = require('../../database/connection');
+const { hash } = require('bcryptjs');
 
 exports.createHastag = (req, res) => {
     const {hastag} = req.body;
@@ -28,4 +29,28 @@ exports.readHastags = (req, res) => {
     knex('hastags').select('hastag').then(dataHastag => {
         res.status(200).json(dataHastag)
     }).catch(err => res.status(400).json(err))
+}
+
+//carrega as hastags utilizadas no perfil de um candidato
+exports.getHashtagsCandidate = async (req, res) => {
+  //console.log('get hashtags user '+req.params.login)
+
+  //primeiro pega o id do usuário pelo login
+  const candidate = await knex('candidates')
+    .select('id')
+    .where({ login: req.params.login })
+    .then(dataCandidate => {
+      //console.log(dataCandidate)
+      const hashtags = knex('hastags')
+        .select('hastag')
+        .where({ candidate_id: dataCandidate[0].id })
+        .then(hashtags => {
+          res.status(200).json(hashtags)
+        })
+        .catch(err => res.status(400).json(err))
+
+    })
+    .catch(err => res.status(400).json(err))
+
+  
 }

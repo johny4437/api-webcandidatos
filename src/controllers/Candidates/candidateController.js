@@ -142,29 +142,14 @@ exports.getSomeCandidateData = async (req, res) =>{
     'coalition',
     'description',
     'profile_pic',
-    'badges'
+    'badges',
+    'proposals'
     );
     
     const stateId = candidate[0].state_id;
     const cityId = candidate[0].city_id;
-    const st = await knex('estados').select('estado').where('id', stateId);
-    const ci = await knex('cidades').select('cidade').where('id',cityId);
+    
     const hs = await knex('hastags').select('hastag').where('candidate_id', candidate_id)
-
-    let name = candidate[0].name;
-    let email = candidate[0].email;
-    let cpf = candidate[0].cpf;
-    let telephone = candidate[0].telephone;
-    let city = ci[0].cidade;
-    let state = st[0].estado;
-    let login = candidate[0].login;
-    let qrcode = candidate[0].qrcode;
-    let number = candidate[0].number;
-    let party = candidate[0].party;
-    let coalition = candidate[0].coalition;
-    let description = candidate[0].description;
-    let profile_pic = candidate[0].profile_pic;
-    let badges = candidate[0].badges;
 
     let hastags = []
     hs.map(hashtag => {
@@ -173,16 +158,13 @@ exports.getSomeCandidateData = async (req, res) =>{
     
     if(hs.length > 0) hastags[0] = '#'+hastags[0]
 
-    console.log('candidate_id', candidate_id)
-    console.log('hastags: '+hastags)
-
     const user = {
       ...candidate[0],
       state_id: stateId,
       city_id: cityId,
       hastags: hastags.join(' #'),
     }
-    //console.log(user)
+    
     res.status(200).json(user)
   }catch(e){
     res.status(400).json({error:"USER NOT FOUND"})
@@ -203,17 +185,18 @@ exports.getOneCandidate = async(req, res) =>{
   const login = req.params.login;
   try {
      const candidate = await knex('candidates').where('login',login).select('id', 
-  'id',
-  'name',
-  'party',
-  'coalition',
-  'description',
-  'city_id',
-  'state_id',
-  'number',
- ' profile_pic',
- 'cover_pic',
- ' qrcode');
+      'id',
+      'name',
+      'party',
+      'coalition',
+      'description',
+      'city_id',
+      'state_id',
+      'number',
+      'profile_pic',
+      'cover_pic',
+      'badges',
+      'proposals');
   
   const stateId = candidate[0].state_id;
   //console.log(stateId)
@@ -221,26 +204,20 @@ exports.getOneCandidate = async(req, res) =>{
   const st = await knex('estados').select('estado').where('id', stateId);
   const ci= await knex('cidades').select('cidade').where('id',cityId);
 
-  let name = candidate[0].name;
-  let party = candidate[0].party;
-  let coalition = candidate[0].coalition;
-  let description = candidate[0].description;
-  let number = candidate[0].number;
-  let  profile_pic = candidate[0].profile_pic;
-  let  cover_pic =candidate[0].cover_pic;
-  let city = ci[0].cidade;
-  let state = st[0].estado
+  // let name = candidate[0].name;
+  // let party = candidate[0].party;
+  // let coalition = candidate[0].coalition;
+  // let description = candidate[0].description;
+  // let number = candidate[0].number;
+  // let  profile_pic = candidate[0].profile_pic;
+  // let  cover_pic =candidate[0].cover_pic;
+  // let city = ci[0].cidade
+  // let state = st[0].estado
 
   const user = {
-    name,
-    party,
-    coalition,
-    description,
-    number,
-    city,
-    state,
-    profile_pic,
-    cover_pic
+    ...candidate[0],
+    city: ci[0].cidade,
+    state: st[0].estado,
   }
 
   //console.log(user)
@@ -274,28 +251,29 @@ exports.updateCandidate = async (req, res) => {
       cpf,
       description,
       hastags,
-      badges
+      badges,
+      proposals
     } = req.body;
     try {      
       
       let hashtagsArr = hastags.split('#')
-      console.log(hashtagsArr)
+      //console.log(hashtagsArr)
       hashtagsArr = hashtagsArr.map(s => s.trim()) //tira os espaços em branco
-      console.log(hashtagsArr)
+      //console.log(hashtagsArr)
 
-      console.log('> update candidate')
-      console.log(hashtagsArr)
+      //console.log('> update candidate')
+      //console.log(hashtagsArr)
       //excluir hashtags que o candidato escolheu não usar mais, ou seja,
       //as hashtags que não estão no vetor hashtagsArr porém estão no banco
       const hs = await knex('hastags').select('*')
                         .where('candidate_id', id)
-      console.log('> hs '+hs.length)
+      //console.log('> hs '+hs.length)
       hs.map(async hsOld => {
-        console.log('hsold: '+hsOld)
+        //console.log('hsold: '+hsOld)
         ///caso não esteja no array, exclui
         if(!hashtagsArr.includes(hsOld.hastag)){
-          console.log('>> remove '+hsOld.id)
-          console.log('>> hashtag '+hsOld.hastag)
+          //console.log('>> remove '+hsOld.id)
+          //console.log('>> hashtag '+hsOld.hastag)
           await knex('hastags').where({'id': hsOld.id}).del();
         }
       })
@@ -303,7 +281,7 @@ exports.updateCandidate = async (req, res) => {
       
       //para cada uma das hashtags, salva na tabela
       hashtagsArr.map(hastag => {
-        console.log('> salva '+hastag)
+        //console.log('> salva '+hastag)
         if(hastag !== '' && hastag !== ' '){
           const hastagData = {
             hastag: hastag.trim(),
@@ -344,7 +322,8 @@ exports.updateCandidate = async (req, res) => {
         url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
         status: 'actived', //actived | deactived | verified
         updated_at:new Date(),
-        badges
+        badges,
+        proposals
     };
 
     await knex('candidates').select('id')
@@ -383,11 +362,6 @@ exports.updateCandidate = async (req, res) => {
       } catch (error) {
         res.status(400).json({message:"ERROR TO UPDATE PASSWORD "})
       }
-
-
-     
-
-
    }
     
 

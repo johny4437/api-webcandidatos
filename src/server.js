@@ -23,6 +23,7 @@ const qrCodeRoute = require('./routes/qrCodeViewRoute');
 const shareWpRoute = require('./routes//shareWpRoute');
 const addressRoute = require('./routes/addressRoute');
 const route = require('./routes/addressRoute');
+const hastagsRoute = require('./routes/hastagsRoute');
 
 app.use(cors());
 
@@ -55,6 +56,7 @@ app.use(likeRoute);
 app.use(qrCodeRoute);
 app.use(shareWpRoute);
 app.use(addressRoute);
+app.use(hastagsRoute);
 
 
 const PORT = process.env.PORT || 3333;

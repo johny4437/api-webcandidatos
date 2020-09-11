@@ -17,6 +17,7 @@ exports.up = function(knex) {
 		table.string('cpf').unique().notNullable()
 		table.text('number');
     table.text('description');
+    table.text('proposals');
     table.text('badges'); //vamos usar as badges estáticamente por enquanto
 		table.text('profile_pic')
 		table.text('url_profile_pic')
