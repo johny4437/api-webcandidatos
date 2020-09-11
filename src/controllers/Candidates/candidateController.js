@@ -324,7 +324,29 @@ exports.updateCandidate = async (req, res) => {
    }
     
 
+// ======================================================================================
+// UPDATE PROFILE PIC
+// =======================================================================================
+exports.updateProfilePic = async (req, res) =>{
+  const {profile_pic} = req.body.profile_pic;
+  const id = req.params.candidate_id;
+  const cand = {
+    profile_pic
+  }
 
+await knex('candidates').select('*').where('id',id).then(data=>{
+  if(data.length !==0){
+    return knex('candidates').where('id', data[0].id).update(cand).then(()=>{
+      res.status(200).json({msg:"PROFILE PIC UPDATED"})
+    }).catch(()=>{
+      res.status(400).json({msg:"ERROR TO UPDATE PROFILE PIC"})
+    })
+  }else{
+    res.status(400).json({msg:"USER NOT FOUND"})
+  }
+})
+
+}
 
 // =============================================================================================
 // DELETE CONTROLLER
@@ -396,15 +418,15 @@ exports.forgotPassword = async (req, res) =>{
       res.status(400).json({msg: "USER WITH THIS EMAIL DON'T EXIST"})
     }else {
 
-      const token =jwt.sign({id: candidateData.id}, process.env.JWT_SECRET)
+      const token =jwt.sign({id: candidateData.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
       
-       res.cookie('t', token, {expire:new Date() + 8888})
+       
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
       to: email,
       subject: 'Recuperaçao de Senha',
       html: `<h4>Clique no link abaixo para trocar a senha:</h4>
-        <p>http://127.0.0.1:3333/password/forgot/${token}</p>`
+        <p>http://127.0.0.1:3000/password/reset/${token}</p>`
 
         };
         console.log(candidateData[0].email);
@@ -440,46 +462,51 @@ exports.forgotPassword = async (req, res) =>{
 exports.resetPassword = async(req, res) =>{
   const token = req.params.token
   
- console.log(token)
+ // console.log(token)
 
   if(token){
-    jwt.verify(token, process.env.JWT_SECRET, (err,decoded)=>{
+    jwt.verify(token, process.env.JWT_SECRET, async (err,decoded)=>{
       if(err){
-        res.status(400).json({msg:"Incorretd ToKen or This Token is Expired"})
+        res.json({msg:"Incorretd ToKen or This Token  Expired"})
       }
-       return knex('candidates').select('*').where('resetLink', token).then(data =>{
+       return await knex('candidates').select('*').where('resetLink', token).then(data =>{
+         // console.log(data)
           if(data.length === 0){
-              res.status(400).json({error:"This Token is Invalid"})
-            }else {
 
-              res.status(200).json({msg:"This Token is Valid"})
-      
+              res.json({msg:"This Token is Invalid or Expirate"})
+              // console.log('This Token is Invalid')
+            }else {
+             
+
+              //
+               res.json({msg:"This Token is Ok", email:data[0].email})
+              // console.log('Token is Ok')
             }
+  }).catch(err =>{
+    res.json(err)
   })
 
     })
   }else {
-    res.status(400).json({error:"Authentication Failed"})
+    res.json({msg:"Authentication Failed"})
+    // console.log('Falha na autenticação')
   }
 
  
 };
 
+
 exports.setNewForgotPass = async(req, res) =>{
-  const newPass = hashPassword(req.body.newPass);
-  const password = newPass.hash
-const cand ={password:password}
+  const {email,password} = req.body
+  const newPass = hashPassword(password);
+  const hash = newPass.hash
+const cand ={
+  password:hash
+}
 
-              await knex('candidates').select('*').where('id', data[0].id).update(cand)
-              .then(()=>res.status(200).json({msg:"Password was Updated"}))
-              .catch((err)=>res.status(400).json({error:"Password was not Updated"}))
-
-
-
-
-
-
-
+              await knex('candidates').select('*').where('email', email).update(cand)
+              .then(()=>res.json({msg:"Password was Updated"}))
+              .catch((err)=>res.json({msg:"Password was not Updated"}))
 
 }
 
