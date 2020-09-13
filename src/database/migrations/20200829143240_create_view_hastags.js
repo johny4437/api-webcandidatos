@@ -3,9 +3,9 @@ exports.up = function(knex) {
   return knex.schema.createTable('view_hastags', function(table){
       table.increments();
 
-      table.text('user_id').notNullable();
+      table.string('user_id').notNullable();
       table.integer('hastag_id').notNullable();
-      table.foreign('hastag_id').references('id').inTable('hastags');
+      //table.foreign('hastag_id').references('id').inTable('hastags');
 
       table.timestamp('created_at').defaultTo(knex.fn.now());
   })

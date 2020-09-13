@@ -17,102 +17,97 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createCandidate = async (req, res) =>{
 
-        console.log('> create candidate')
+  let { password } = req.body
 
-       const hash = hashPassword(req.body.password);
-      //console.log(req.body.password)
-       const password = hash.hash
-        console.log(password)
-        const cand_id= crypto.randomBytes(10).toString('HEX')
-        const id = cand_id + Date.now();
+  const {
+    name,
+    email,
+    number,
+    party,
+    coalition,
+    city_id,
+    telephone,
+    state_id,
+    cpf,
+    passwordAgain
+  } = req.body
 
-        const {
-            name,
-            email,
-            city_id,
-            telephone,
-            state_id,
-            cpf
-          } = req.body;
+  //verificar se os campos tem dados válidos, senão enviar um erro
+  if(name != '' && email != '' && cpf != '' && telephone != '' && state_id > 0 && city_id > 0 && password != '' && passwordAgain != ''){
     
-         
-          
-          // let { profile_pic, cover_pic, doc_selfie, doc_identity, doc_files_candidate } = files;
-          
-          
-          let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
-          // busca new name no banco
-          let candidateAux = await knex('candidates').where('login', newName).select('login')
-          
-          console.log(candidateAux)
 
-          let indiceLogin = 0
+    //comparar se as senhas são iguais, senão enviar um erro
+    if(password === passwordAgain){
+      const hash = hashPassword(req.body.password);
+      //console.log(req.body.password)
+      password = hash.hash
+      //console.log(password)
+      const cand_id= crypto.randomBytes(10).toString('HEX')
+      const id = cand_id + Date.now();
 
-          // caso exista
-          if(candidateAux.length !== 0){
-            console.log(`>> login ${newName} ja existe.`)
-            
-            do{
-              indiceLogin++
+      let newName = name.replace(/[^A-Z0-9]+/ig, "-").toLowerCase(); 
+      // busca new name no banco
+      let candidateAux = await knex('candidates').where('login', newName).select('login')
+      
+      //console.log(candidateAux)
 
-              // busca no banco new name + - i
-              console.log('>>> testando nome '+newName+'-'+indiceLogin)
-              candidateAux = await knex('candidates').where('login', newName+'-'+indiceLogin).select('login')
+      let indiceLogin = 0
 
-            }while(candidateAux.length !== 0) //enquanto a consulta retorna true
-            //ou seja, enquanto existe candidato com o login gerado, gera um novo login incrementando o contador
-          }
-
-          const generatedLogin = (indiceLogin > 0) ? newName+'-'+indiceLogin : newName
-          
-          let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/user/'+ newName); 
-         
-       
-;         
+      // caso exista
+      if(candidateAux.length !== 0){
+        //console.log(`>> login ${newName} ja existe.`)
         
-          const candidate = {
-            id,
-            name,
-            email,
-            password,
-            city_id,
-            login:generatedLogin,
-            state_id,
-            cpf,
-            telephone,
-            status: 'actived', //actived | deactived | verified
-            qrcode:qrcode,
-            
-          };
-          // DADOS PARA ENVIAR EMAIL
-         const transporter = nodemailer.createTransport({
-                pool: true,
-                host: "mail.webcandidatos.com.br",
-                port: 465,
-                secure: true, // use TLS
-                auth: {
-                    user: "noreply@webcandidatos.com.br",
-                    pass: "ImaG9tC8pWJ5"
-                }
+        do{
+          indiceLogin++
+
+          // busca no banco new name + - i
+          //console.log('>>> testando nome '+newName+'-'+indiceLogin)
+          candidateAux = await knex('candidates').where('login', newName+'-'+indiceLogin).select('login')
+
+        }while(candidateAux.length !== 0) //enquanto a consulta retorna true
+        //ou seja, enquanto existe candidato com o login gerado, gera um novo login incrementando o contador
+      }
+
+      const generatedLogin = (indiceLogin > 0) ? newName+'-'+indiceLogin : newName
+      
+      let qrcode = await generateQRCODE('https://www.webcandidatos.com.br/user/'+ newName); 
+      
+
+      const candidate = {
+        id,
+        name,
+        email,
+        password,
+        number,
+        party,
+        coalition,
+        city_id,
+        login:generatedLogin,
+        state_id,
+        cpf,
+        telephone,
+        status: 'actived', //actived | deactived | verified
+        qrcode:qrcode,
+      };
+       const transporter = nodemailer.createTransport({
+          pool: true,
+          host: "mail.webcandidatos.com.br",
+          port: 465,
+          secure: true, // use TLS
+          auth: {
+            user: "noreply@webcandidatos.com.br",
+            pass: "ImaG9tC8pWJ5"
+            }
          });
 
-          const mailOptions = {
-              from: 'noreply@webcandidatos.com.br',
-              to: email,
-              subject: 'Conta criada com sucesso',
-              text:`${name} seu cadastro foi feito com sucesso.\n\n`
-              +'Por Favor Clique no link abaixo para entrar em sua conta.\n\n'
-              +`http://127.0.0.1:3000/login`
-
-        };
-
-        
-          
-
-       await knex('candidates').select('cpf','id').where('cpf',cpf)
-          .then(usernameList=>{
-              if(usernameList.length===0){
-                return knex('candidates')
+      try{
+        await knex('candidates')
+          .select('cpf','id')
+          .where('cpf', cpf)
+          .orWhere('email', email)
+          .then(usernameList=> {
+            if(usernameList.length === 0){
+              knex('candidates')
                 .insert(candidate)
                 .then(()=>{
 
@@ -132,11 +127,26 @@ exports.createCandidate = async (req, res) =>{
                   
               })
             }else{
-              return res.status(404).json({message:"USER WITH THIS CPF ALREADY EXISTS"})
+              return res.status(404).json({message:"Este usuário já está cadastrado"})
 
               };
              
           })
+      }catch(e){
+        console.log(error)
+        return res.status(400).send({ error })
+      }
+      
+
+    }else{ //as senhas não são iguais, erro
+      console.log('> as senhas não conferem')
+      return res.status(400).json({message: "AS SENHAS NÃO CONFEREM"})
+    } 
+
+  }else{ //tem algum dado faltando, erro
+    console.log('> erro dados inválidos')
+    return res.status(400).json({ message: "DADOS INVÁLIDOS" })  
+  } 
     
 };
 //=================================================================================================
@@ -160,39 +170,51 @@ exports.readCandidates = async (req, res) =>{
 exports.getSomeCandidateData = async (req, res) =>{
   const candidate_id = req.params.candidate_id;
   
-  const candidate = await knex('candidates').where('id',candidate_id).select('id', 
-  'name',
-  'email',
-  'cpf',
-  'telephone',
-  'city_id',
-  'state_id',
-  );
-   
-  const stateId = candidate[0].state_id;
-  const cityId = candidate[0].city_id;
-  const st = await knex('estados').select('estado').where('id', stateId);
-  const ci= await knex('cidades').select('cidade').where('id',cityId);
+  try{
+    const candidate = await knex('candidates').where('id',candidate_id).select(
+      'id', 
+    'name',
+    'email',
+    'cpf',
+    'telephone',
+    'city_id',
+    'state_id',
+    'login',
+    'qrcode',
+    'number',
+    'party',
+    'coalition',
+    'description',
+    'profile_pic',
+    'badges',
+    'proposals'
+    );
+    
+    const stateId = candidate[0].state_id;
+    const cityId = candidate[0].city_id;
+    
+    const hs = await knex('hastags').select('hastag').where('candidate_id', candidate_id)
 
-  var name = candidate[0].name;
-  var email = candidate[0].email;
-  var cpf = candidate[0].cpf;
-  var telephone = candidate[0].telephone;
-  var city = ci[0].cidade;
-  var state = st[0].estado;
-  
+    let hastags = []
+    hs.map(hashtag => {
+      hastags.push(hashtag.hastag)
+    });
+    
+    if(hs.length > 0) hastags[0] = '#'+hastags[0]
 
-  const user = {
-    name,
-    email,
-    cpf,
-    telephone,
-    city, 
-    state,
-    stateId
+    const user = {
+      ...candidate[0],
+      state_id: stateId,
+      city_id: cityId,
+      hastags: hastags.join(' #'),
+    }
+    
+    res.status(200).json(user)
+  }catch(e){
+    res.status(400).json({error:"USER NOT FOUND"})
   }
 
-  res.status(200).json(user)
+  
 
 }
 
@@ -207,48 +229,44 @@ exports.getOneCandidate = async(req, res) =>{
   const login = req.params.login;
   try {
      const candidate = await knex('candidates').where('login',login).select('id', 
-  'id',
-  'name',
-  'party',
-  'coalition',
-  'description',
-  'city_id',
-  'state_id',
-  'number',
- ' profile_pic',
- 'cover_pic',
- ' qrcode');
+      'id',
+      'name',
+      'party',
+      'coalition',
+      'description',
+      'city_id',
+      'state_id',
+      'number',
+      'profile_pic',
+      'cover_pic',
+      'badges',
+      'proposals');
   
- const stateId = candidate[0].state_id;
- console.log(stateId)
- const cityId = candidate[0].city_id;
- const st = await knex('estados').select('estado').where('id', stateId);
-const ci= await knex('cidades').select('cidade').where('id',cityId);
+  const stateId = candidate[0].state_id;
+  //console.log(stateId)
+  const cityId = candidate[0].city_id;
+  const st = await knex('estados').select('estado').where('id', stateId);
+  const ci= await knex('cidades').select('cidade').where('id',cityId);
 
-var name = candidate[0].name;
-var party = candidate[0].party;
-var coalition = candidate[0].coalition;
-var description = candidate[0].description;
-var number = candidate[0].number;
-var  profile_pic = candidate[0].profile_pic;
-var  cover_pic =candidate[0].cover_pic;
-var city = ci[0].cidade;
-var state = st[0].estado
+  // let name = candidate[0].name;
+  // let party = candidate[0].party;
+  // let coalition = candidate[0].coalition;
+  // let description = candidate[0].description;
+  // let number = candidate[0].number;
+  // let  profile_pic = candidate[0].profile_pic;
+  // let  cover_pic =candidate[0].cover_pic;
+  // let city = ci[0].cidade
+  // let state = st[0].estado
 
-const user = {
-  name,
-  party,
-  coalition,
-  description,
-  number,
-  city,
-  state,
-  profile_pic,
-  cover_pic
-}
+  const user = {
+    ...candidate[0],
+    city: ci[0].cidade,
+    state: st[0].estado,
+  }
+
+  //console.log(user)
+
   res.json(user)
-
-
 
   } catch(e) {
     res.status(400).json({error:"USER NOT FOUND"})
@@ -263,11 +281,6 @@ const user = {
 exports.updateCandidate = async (req, res) => {
 
   const id = req.params.candidate_id;
-  // const imageMimeTypes = ['image/png','image/jpeg', 'image/jpg', 'image/gif'];
- 
-
-
- 
 
   const {
       name,
@@ -281,34 +294,83 @@ exports.updateCandidate = async (req, res) => {
       cover_pic,
       cpf,
       description,
+      hastags,
+      badges,
+      proposals
     } = req.body;
+    try {      
+      
+      let hashtagsArr = hastags.split('#')
+      //console.log(hashtagsArr)
+      hashtagsArr = hashtagsArr.map(s => s.trim()) //tira os espaços em branco
+      //console.log(hashtagsArr)
 
+      //console.log('> update candidate')
+      //console.log(hashtagsArr)
+      //excluir hashtags que o candidato escolheu não usar mais, ou seja,
+      //as hashtags que não estão no vetor hashtagsArr porém estão no banco
+      const hs = await knex('hastags').select('*')
+                        .where('candidate_id', id)
+      //console.log('> hs '+hs.length)
+      hs.map(async hsOld => {
+        //console.log('hsold: '+hsOld)
+        ///caso não esteja no array, exclui
+        if(!hashtagsArr.includes(hsOld.hastag)){
+          //console.log('>> remove '+hsOld.id)
+          //console.log('>> hashtag '+hsOld.hastag)
+          await knex('hastags').where({'id': hsOld.id}).del();
+        }
+      })
 
+      
+      //para cada uma das hashtags, salva na tabela
+      hashtagsArr.map(hastag => {
+        //console.log('> salva '+hastag)
+        if(hastag !== '' && hastag !== ' '){
+          const hastagData = {
+            hastag: hastag.trim(),
+            candidate_id: id
+          }
+      
+          knex('hastags').select('*')
+            .where('hastag', hastag)
+            .where('candidate_id', id)
+            .then(data => {
+                if(data.length === 0){
+                    knex('hastags').insert(hastagData)
+                      .then(() =>{
+                          //res.status(200).json({msg:"HASTAG CREATED"})
+                      })
+                }else{
+                    //res.status(404).json({msg:"HASTAG ALREADY EXISTS"})
+                }
+            })
+        }
+        
+      })
 
-    const candidate = {
-      id,
-      name,
-      email,
-      number,
-      party,
-      coalition,
-      city_id,
-      state_id,
-      cpf,
-      description,
-      profile_pic,
-      url_cover_pic:`http://192.168.0.110/files/${profile_pic}`,
-      cover_pic,
-      url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
-      status: 'actived', //actived | deactived | verified
- 
-   }
+      const candidate = {
+        id,
+        name,
+        email,
+        number,
+        party,
+        coalition,
+        city_id,
+        state_id,
+        cpf,
+        description,
+        profile_pic: profile_pic,
+        url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
+        cover_pic:cover_pic,
+        url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
+        status: 'actived', //actived | deactived | verified
+        updated_at:new Date(),
+        badges,
+        proposals
+    };
 
-    try {
-
-
-       
-      await knex('candidates').select('id')
+    await knex('candidates').select('id')
         .where('id', id)
         .update(candidate)
 
@@ -318,7 +380,7 @@ exports.updateCandidate = async (req, res) => {
       
     } catch(e) {
       
-      res.status(404).json("NOT UPDATED")
+      res.status(404).json("NOT UPDATED "+e)
     }
 // SÓ NÃO ATUALIZA O QRCODE
    }
@@ -344,11 +406,6 @@ exports.updateCandidate = async (req, res) => {
       } catch (error) {
         res.status(400).json({message:"ERROR TO UPDATE PASSWORD "})
       }
-
-
-     
-
-
    }
     
 
@@ -397,10 +454,9 @@ exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
 
-
-  
-
-    knex('candidates').where('email', email)
+if(email != ''){
+  if(password != ''){
+      knex('candidates').where('email', email)
                       .select('password','id', 'name','login')
                       .first()
                       .then(user =>{
@@ -427,14 +483,28 @@ exports.singin = async (req, res) =>{
                                   })
                         }
                       })
+
+
+
+
+  }else{
+    res.json('Senha não fornecida')
+  }
+  
+}else{
+  res.json('Email não fornecido')
+}
+
+  
+
+    
 };
 
 
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
-
- 
-      const transporter = nodemailer.createTransport({
+  if(email != ''){
+     const transporter = nodemailer.createTransport({
           pool: true,
           host: "mail.webcandidatos.com.br",
           port: 465,
@@ -451,7 +521,7 @@ exports.forgotPassword = async (req, res) =>{
   await knex('candidates').select('*').where('email', email)
   .then(candidateData =>{
     if(candidateData.length === 0) {
-      res.status(400).json({msg: "USER WITH THIS EMAIL DON'T EXIST"})
+      res.json( "Usuário com esse email não existe")
     }else {
 
       const token =jwt.sign({id: candidateData.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
@@ -467,7 +537,7 @@ exports.forgotPassword = async (req, res) =>{
       +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
-        console.log(candidateData[0].email);
+        //console.log(candidateData[0].email);
           const cand = {
             resetLink:token
           }
@@ -495,6 +565,14 @@ exports.forgotPassword = async (req, res) =>{
       
     }
   })
+
+
+
+  }else{
+    res.status(404).json('É preciso inserir o email cadastrado')
+  }
+ 
+     
 };
 
 exports.resetPassword = async(req, res) =>{
@@ -535,16 +613,26 @@ exports.resetPassword = async(req, res) =>{
 
 
 exports.setNewForgotPass = async(req, res) =>{
-  const {email,password} = req.body
-  const newPass = hashPassword(password);
-  const hash = newPass.hash
-const cand ={
-  password:hash
-}
+  const {email,password, confirm_pass} = req.body
 
-              await knex('candidates').select('*').where('email', email).update(cand)
-              .then(()=>res.json({msg:"Password was Updated"}))
-              .catch((err)=>res.json({msg:"Password was not Updated"}))
+  
+    if(password === confirm_pass){
+            const newPass = hashPassword(password);
+            const hash = newPass.hash
+            const cand ={
+                password:hash
+              }
+
+                  await knex('candidates').select('*').where('email', email).update(cand)
+                  .then(()=>res.json({msg:"Password was Updated"}))
+                  .catch((err)=>res.json({msg:"Password was not Updated"}))
+    }else{
+     console.log('As senhas precisam ser iguais')
+    }
+
+  
+
+  
 
 }
 

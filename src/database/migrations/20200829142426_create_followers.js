@@ -3,8 +3,8 @@ exports.up = function(knex) {
   return knex.schema.createTable('followers',function(table){
       table.increments();
 
-      table.text('user_id').notNullable();;
-      table.text('candidate_id').notNullable();
+      table.string('user_id').notNullable();;
+      table.string('candidate_id').notNullable();
       table.foreign('candidate_id').references('id').inTable('candidates');
       table.timestamp('createdAt').defaultTo(knex.fn.now());
       table.text('updated_at');

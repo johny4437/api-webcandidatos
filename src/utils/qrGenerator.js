@@ -3,7 +3,7 @@ const path = require('path')
 const knex = require('../database/connection');
 async function generateQRCODE(text){
     try {
-     const url =  await QR.toDataURL(text,{ errorCorrectionLevel: 'H' })
+     const url =  await QR.toDataURL(text,{ errorCorrectionLevel: 'H', width: 600 })
         return  url
       } catch (err) {
         console.error(err)
@@ -16,7 +16,7 @@ async function verifyLogin(username){
   // busca new name no banco
   let candidateAux = await knex('candidates').where('login', username).select('login')
           
-  console.log(candidateAux)
+  //console.log(candidateAux)
   
   // caso exista
   if(candidateAux){
@@ -31,7 +31,7 @@ async function verifyLogin(username){
     }while(candidateAux) //enquanto a consulta retorna true
     //ou seja, enquanto existe candidato com o login gerado, gera um novo login incrementando o contador
   }
-  console.log(">> login gerado: "+username+'-'+indiceLogin)
+  //console.log(">> login gerado: "+username+'-'+indiceLogin)
   
   return username+'-'+indiceLogin
 

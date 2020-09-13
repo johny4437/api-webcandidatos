@@ -30,6 +30,11 @@ var cpUpload = upload.single('profile_pic');
 
 
 route.post('/candidates/singup', createCandidate);
+
+// route.post('/candidates/singup', (req, res) => {
+//   console.log('field: '+req.body.email)
+// });
+
 route.get('/candidates', readCandidates);
 
 
