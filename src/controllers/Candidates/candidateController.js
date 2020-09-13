@@ -85,14 +85,17 @@ exports.createCandidate = async (req, res) =>{
             
           };
           // DADOS PARA ENVIAR EMAIL
+         const transporter = nodemailer.createTransport({
+                pool: true,
+                host: "mail.webcandidatos.com.br",
+                port: 465,
+                secure: true, // use TLS
+                auth: {
+                    user: "noreply@webcandidatos.com.br",
+                    pass: "ImaG9tC8pWJ5"
+                }
+         });
 
-          const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'johnyanastaciods@gmail.com',
-              pass: '97909001' // naturally, replace both with your real credentials or an application-specific password
-            }
-          });
           const mailOptions = {
               from: 'noreply@webcandidatos.com.br',
               to: email,
@@ -428,13 +431,18 @@ exports.singin = async (req, res) =>{
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
 
-  const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'johnyanastaciods@gmail.com',
-    pass: '97909001' // naturally, replace both with your real credentials or an application-specific password
-  }
-});
+ 
+      const transporter = nodemailer.createTransport({
+          pool: true,
+          host: "mail.webcandidatos.com.br",
+          port: 465,
+          secure: true, // use TLS
+          auth: {
+            user: "noreply@webcandidatos.com.br",
+            pass: "ImaG9tC8pWJ5"
+            }
+         });
+
   
 
 
