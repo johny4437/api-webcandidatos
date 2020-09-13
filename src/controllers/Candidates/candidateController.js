@@ -7,6 +7,9 @@ const jwt  = require('jsonwebtoken');
 const {JWT_SECRET} = require('../../variables');
 const {hashPassword, comparePassword} = require('../../utils/passwordHash');
 const {generateQRCODE, verifyLogin} = require('../../utils/qrGenerator')
+const fs = require('fs');
+const {imageDecode} = require('../../utils/decodeFunctionImage')
+
 require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 
@@ -49,6 +52,28 @@ exports.createCandidate = async (req, res) =>{
       //console.log(candidateAux)
 
       let indiceLogin = 0
+          // DADOS PARA ENVIAR EMAIL
+
+       // DADOS PARA ENVIAR EMAIL
+       const transporter = nodemailer.createTransport({
+        pool: true,
+        host: "mail.webcandidatos.com.br",
+        port: 465,
+        secure: true, // use TLS
+        auth: {
+            user: "noreply@webcandidatos.com.br",
+            pass: "ImaG9tC8pWJ5"
+        }
+      });
+
+      const mailOptions = {
+        from: 'noreply@webcandidatos.com.br',
+        to: email,
+        subject: 'Conta criada com sucesso',
+        text:`${name} seu cadastro foi feito com sucesso.\n\n`
+        +'Por Favor Clique no link abaixo para entrar em sua conta.\n\n'
+        +`http://127.0.0.1:3000/login`
+      };
 
       // caso exista
       if(candidateAux.length !== 0){
@@ -94,10 +119,25 @@ exports.createCandidate = async (req, res) =>{
           .orWhere('email', email)
           .then(usernameList=> {
             if(usernameList.length === 0){
-              knex('candidates')
+              knex('candidates') 
                 .insert(candidate)
                 .then(()=>{
-                  return res.json({message:"USUÁRIO CADASTRADO COM SUCESSO"})                  
+
+                  transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                      //res.status(400).json(error);
+                      console.log('>> erro ao enviar email '+error)
+                    }else{
+                      let msg = 'Email sent. Follow the instructions';
+                      var data = {
+                        msg
+                      }
+                      //res.status(200).json(data);
+                      console.log('>> email enviado com sucesso!')
+                    }
+                  }); 
+
+                  return res.json({message:"USUÁRIO CADASTRADO COM SUCESSO"})
                 })
             }else{
               //console.log('usuário ja existe')
@@ -261,10 +301,10 @@ exports.updateCandidate = async (req, res) => {
       number,
       party,
       coalition,
-      profile_pic,
-      cover_pic,
       city_id,
       state_id,
+      profile_pic,
+      cover_pic,
       cpf,
       description,
       hastags,
@@ -382,7 +422,32 @@ exports.updateCandidate = async (req, res) => {
    }
     
 
+// ======================================================================================
+// UPDATE PROFILE PIC
+// =======================================================================================
+exports.updateProfilePic = async (req, res) =>{
+  const profile_pic = req.body.profile_pic;
+  console.log(req.body)
+  const id = req.params.candidate_id;
+  const cand = {
+    profile_pic
+  }
+  console.log(profile_pic)
 
+await knex('candidates').select('*').where('id',id).then(data=>{
+  if(data.length !==0){
+    // console.log(data[0].id)
+    return knex('candidates').where('id', data[0].id).update(cand).then(()=>{
+      res.status(200).json({msg:"PROFILE PIC UPDATED"})
+    }).catch(()=>{
+      res.status(400).json({msg:"ERROR TO UPDATE PROFILE PIC"})
+    })
+  }else{
+    res.status(400).json({msg:"USER NOT FOUND"})
+  }
+})
+
+}
 
 // =============================================================================================
 // DELETE CONTROLLER
@@ -454,14 +519,17 @@ exports.forgotPassword = async (req, res) =>{
       res.status(400).json({msg: "USER WITH THIS EMAIL DON'T EXIST"})
     }else {
 
-      const token =jwt.sign({id: candidateData.id}, process.env.JWT_SECRET)
-       res.cookie('t', token, {expire:new Date() + 8888})
+      const token =jwt.sign({id: candidateData.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
+      
+       
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
       to: email,
-      subject: 'Recuperaçao de Senha',
-      html: `<h4>Clique no link abaixo para trocar a senha:</h4>
-        <p>http://127.0.0.1:3333/password/forgot/${token}</p>`
+      subject: 'Resetar Senha',
+      text:'Sua solicitação para resetar senha Foi efetuada com sucesso.\n\n'
+      +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
+      +`http://127.0.0.1:3000/password/reset/${token}.\n\n`
+      +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
         //console.log(candidateData[0].email);
@@ -477,7 +545,13 @@ exports.forgotPassword = async (req, res) =>{
         if (error) {
               res.status(400).json(error);
         } else {
-         res.status(200).json('Email sent. Follow the instructions');
+          let msg = 'Email sent. Follow the instructions';
+          var data = {
+            msg,
+            token
+          }
+         res.status(200).json(data);
+
         }});
 
         })
@@ -490,41 +564,68 @@ exports.forgotPassword = async (req, res) =>{
 
 exports.resetPassword = async(req, res) =>{
   const token = req.params.token
-  const newPass = hashPassword(req.body.newPass);
-  const password = newPass.hash
-
+  
+ // console.log(token)
 
   if(token){
-    jwt.verify(token, process.env.JWT_SECRET, (err,decoded)=>{
+    jwt.verify(token, process.env.JWT_SECRET, async (err,decoded)=>{
       if(err){
-        res.status(400).json({msg:"Incorretd ToKen or This Token is Expired"})
+        res.json({msg:"Incorretd ToKen or This Token  Expired"})
       }
-       return knex('candidates').select('*').where('resetLink', token).then(data =>{
+       return await knex('candidates').select('*').where('resetLink', token).then(data =>{
+         // console.log(data)
           if(data.length === 0){
-              res.status(400).json({error:"This Token is Invalid"})
+
+              res.json({msg:"This Token is Invalid or Expirate"})
+              // console.log('This Token is Invalid')
             }else {
+             
 
-              const cand ={
-                password:password
-              }
-
-              return knex('candidates').select('*').where('id', data[0].id).update(cand)
-              .then(()=>res.status(200).json({msg:"Password was Updated"}))
-              .catch((err)=>res.status(400).json({error:"Password was not Updated"}))
-      
+              //
+               res.json({msg:"This Token is Ok", email:data[0].email})
+              // console.log('Token is Ok')
             }
+  }).catch(err =>{
+    res.json(err)
   })
 
     })
   }else {
-    res.status(400).json({error:"Authentication Failed"})
+    res.json({msg:"Authentication Failed"})
+    // console.log('Falha na autenticação')
   }
 
  
+};
+
+
+exports.setNewForgotPass = async(req, res) =>{
+  const {email,password} = req.body
+  const newPass = hashPassword(password);
+  const hash = newPass.hash
+const cand ={
+  password:hash
 }
 
+              await knex('candidates').select('*').where('email', email).update(cand)
+              .then(()=>res.json({msg:"Password was Updated"}))
+              .catch((err)=>res.json({msg:"Password was not Updated"}))
 
-exports.singout = (req, res) =>{
+}
+
+exports.singout=() =>{
   res.clearCookie("t");
   return res.json({message:"Singout Sucess"});
 }
+
+
+
+
+
+
+
+
+
+
+
+

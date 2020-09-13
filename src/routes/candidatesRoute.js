@@ -13,7 +13,10 @@ const {
     getSomeCandidateData,
     updatePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    updateProfilePic,
+    setNewForgotPass
+    
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
@@ -33,18 +36,21 @@ route.post('/candidates/singup', createCandidate);
 // });
 
 route.get('/candidates', readCandidates);
+
+
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
 route.get('/candidates/singout',singout);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
 route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
+route.put('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate,updateProfilePic)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
 route.put('/candidates/forgot/password', forgotPassword);
-route.put('/password/forgot/:token', resetPassword);
-
+route.get('/password/reset/:token', resetPassword);
+route.put('/update/forgot/password',setNewForgotPass)
 // numero de seguidores
 route.get('/followers/:candidate_id',getFollowers);
 // ================================================================
