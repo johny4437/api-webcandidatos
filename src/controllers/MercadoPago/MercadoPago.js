@@ -83,7 +83,7 @@ var payment_data = {
   description: 'Web Candidatos Assinatura',
   payment_method_id: 'bolbradesco',
   payer: {
-    email:'anastaciojohny83@gmail.com',
+    email:email,
     first_name: 'johnyS',
     last_name: 'User',
     identification: {
@@ -102,7 +102,7 @@ var payment_data = {
 };
 
 Mercadopago.payment.create(payment_data).then(function (data) {
-
+console.log(data)
 const mailOptions = {
               from: 'noreply@webcandidatos.com.br',
               to: email,
@@ -124,6 +124,17 @@ const mailOptions = {
 
                 }});  
 
+        // const payment = {
+        //         platform:'Mercadopago' 
+        //         charge_id, 
+        //         value:'1999', 
+        //         status:,
+        //         payment_method,
+        //         link,
+        //         candidate_id,
+        //         expired_at
+        //     }
+
 
 
 
@@ -132,5 +143,8 @@ res.json(error)
 });
 
 
+
+}
+const getStatusPayment = (req, res) =>{
 
 }

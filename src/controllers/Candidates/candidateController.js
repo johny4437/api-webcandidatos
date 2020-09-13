@@ -126,7 +126,9 @@ exports.createCandidate = async (req, res) =>{
                         }
                          res.status(200).json(data);
 
-                }});   
+                }}).catch(() =>{
+                  res.status(400).json({msg:'User Not Inserted'})
+                });   
                   
               })
             }else{
