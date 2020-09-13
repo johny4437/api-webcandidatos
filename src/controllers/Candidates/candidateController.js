@@ -135,7 +135,7 @@ exports.createCandidate = async (req, res) =>{
                   
               })
             }else{
-              return res.status(404).json({message:"USER ALREADY EXISTS"})
+              return res.status(404).json({message:"USER WITH THIS CPF ALREADY EXISTS"})
 
               };
              
@@ -183,6 +183,7 @@ exports.getSomeCandidateData = async (req, res) =>{
   var telephone = candidate[0].telephone;
   var city = ci[0].cidade;
   var state = st[0].estado;
+  
 
   const user = {
     name,
@@ -190,7 +191,8 @@ exports.getSomeCandidateData = async (req, res) =>{
     cpf,
     telephone,
     city, 
-    state
+    state,
+    stateId
   }
 
   res.status(200).json(user)
