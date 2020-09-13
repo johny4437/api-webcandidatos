@@ -29,14 +29,10 @@ exports.createCandidate = async (req, res) =>{
         const {
             name,
             email,
-            number,
-            party,
-            coalition,
             city_id,
             telephone,
             state_id,
-            cpf,
-            description,
+            cpf
           } = req.body;
     
          
@@ -79,15 +75,11 @@ exports.createCandidate = async (req, res) =>{
             name,
             email,
             password,
-            number,
-            party,
-            coalition,
             city_id,
             login:generatedLogin,
             state_id,
             cpf,
             telephone,
-            description,
             status: 'actived', //actived | deactived | verified
             qrcode:qrcode,
             

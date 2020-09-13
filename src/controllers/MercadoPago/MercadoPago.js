@@ -1,6 +1,6 @@
 const Mercadopago = require('mercadopago');
 var oldAccessToken = Mercadopago.configurations.getAccessToken();
-
+const crypto = require('crypto')
 const getFullUrl = (req) =>{
 	const url = req.protocol + '://' + req.get('host');
 	console.log(url)
@@ -15,18 +15,18 @@ exports.checkout = async(req, res) =>{
 
 	})
 
-   const { id, email, description, amount } = req.body;
-
+   const {email} = req.params;
+    
         // Create purchase item object template
         const purchaseOrder = {
             items: [
               item = {
-                id: id,
-                title: description,
-                description : description,
+                id: 2,
+                title: 'Assinatura Web  Candidatos',
+                description : 'Assinatura Web Candidatos',
                 quantity: 1,
                 currency_id: 'BRL',
-                unit_price: parseFloat(amount)
+                unit_price: parseFloat('1999,99')
               }
             ],
             payer : {
