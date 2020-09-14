@@ -55,7 +55,7 @@ exports.createCandidate = async (req, res) =>{
           // DADOS PARA ENVIAR EMAIL
 
        // DADOS PARA ENVIAR EMAIL
-       const transporter = nodemailer.createTransport({
+      const transporter = nodemailer.createTransport({
         pool: true,
         host: "mail.webcandidatos.com.br",
         port: 465,
@@ -71,8 +71,8 @@ exports.createCandidate = async (req, res) =>{
         to: email,
         subject: 'Conta criada com sucesso',
         text:`${name} seu cadastro foi feito com sucesso.\n\n`
-        +'Por Favor Clique no link abaixo para entrar em sua conta.\n\n'
-        +`http://127.0.0.1:3000/login`
+        +'Por favor clique no link abaixo para entrar em sua conta.\n\n'
+        +`https://www.webcandidatos.com.br/login`
       };
 
       // caso exista
@@ -504,12 +504,15 @@ exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
 
   const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'johnyanastaciods@gmail.com',
-    pass: '97909001' // naturally, replace both with your real credentials or an application-specific password
-  }
-});
+    pool: true,
+    host: "mail.webcandidatos.com.br",
+    port: 465,
+    secure: true, // use TLS
+    auth: {
+        user: "noreply@webcandidatos.com.br",
+        pass: "ImaG9tC8pWJ5"
+    }
+  });
   
 
 
@@ -526,9 +529,9 @@ exports.forgotPassword = async (req, res) =>{
       from: 'noreply@webcandidatos.com.br',
       to: email,
       subject: 'Resetar Senha',
-      text:'Sua solicitação para resetar senha Foi efetuada com sucesso.\n\n'
+      text:'Sua solicitação para resetar senha foi efetuada com sucesso.\n\n'
       +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
-      +`http://127.0.0.1:3000/password/reset/${token}.\n\n`
+      +`https://www.webcandidatos.com.br/password/reset/${token}.\n\n`
       +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
