@@ -2,7 +2,22 @@ const route = require('express').Router();
 const multerConfig = require('../config/multer');
 const multer = require('multer')
 var upload = multer(multerConfig);
-const { createCandidate, readCandidates,updateCandidate, removeCandidate, singin, getOneCandidate} = require('../controllers/Candidates/candidateController');
+const { 
+    createCandidate, 
+    readCandidates,
+    updateCandidate, 
+    removeCandidate, 
+    singin,
+    singout, 
+    getOneCandidate,
+    getSomeCandidateData,
+    updatePassword,
+    forgotPassword,
+    resetPassword,
+    updateProfilePic,
+    setNewForgotPass
+    
+} = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
@@ -11,9 +26,7 @@ const {readViewPost} = require('../controllers/ViewPost/ViewPost')
 const {createBadge, readBadges, updateBadge} = require('../controllers/BadgeCandidates/Badges');
 const {createHastag, readHastags} = require('../controllers/Hastags/Hastags');
 
-var cpUpload = upload.fields([{name:'profile_pic', maxCount:1},
- {name:'cover_pic', maxCount:1},{name:'doc_selfie', maxCount:1},{name:'doc_identity', maxCount:1},
- {name:'doc_files_candidate', maxCount:1}]);
+var cpUpload = upload.single('profile_pic');
 
 
 route.post('/candidates/singup', createCandidate);
@@ -23,13 +36,23 @@ route.post('/candidates/singup', createCandidate);
 // });
 
 route.get('/candidates', readCandidates);
+
+
 // route.get('/candidates/list',listCandidate)
 route.get('/candidates/:login', getOneCandidate);
-route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,cpUpload,updateCandidate)
+route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
+route.get('/candidates/singout',singout);
+route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
+route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
+route.put('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate,updateProfilePic)
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
-// numero de seguidore
-route.get('/followers/:candidate_id', auth,isAuthCandidate,getFollowers);
+// ESQECEU SENHA
+route.put('/candidates/forgot/password', forgotPassword);
+route.get('/password/reset/:token', resetPassword);
+route.put('/update/forgot/password',setNewForgotPass)
+// numero de seguidores
+route.get('/followers/:candidate_id',getFollowers);
 // ================================================================
 // VER NUMERO DE VISITANTES
 route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)
@@ -37,7 +60,7 @@ route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)
 route.get('/candidates/view-post/:candidate_id', auth, isAuthCandidate, readViewPost);
 //======================================================================================
 // BADGES ROUTE
-route.post('/candidates/badges/create/:candidate_id', auth, isAuthCandidate, createBadge);
+route.post('/candidates/badges/:badge_id/create/:candidate_id', auth, isAuthCandidate, createBadge);
 route.get('/badges', readBadges);
 route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
 // ===========================================================================================
@@ -45,6 +68,7 @@ route.put('/badges/update/:candidate_id',auth, isAuthCandidate, updateBadge);
 
 route.post('/hastags/:candidate_id',auth, isAuthCandidate, createHastag);
 route.get('/hastags', readHastags);
+
 
 
 

@@ -123,6 +123,11 @@ exports.singin= async (req, res) => {
 
 
 
+};
+exports.singout = (req, res) =>{
+  res.clearCookie("t");
+  return res.json({message:"Singout Sucess"});
 }
+
 
 

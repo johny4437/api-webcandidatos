@@ -13,16 +13,18 @@ const favRoute = require('./routes/favoritesRoute');
 const visitRoute = require('./routes/visitsRoute');
 const viewPostRoute = require('./routes/viewPostRoute');
 const bodyParser = require("body-parser");
-const viewProposalRoute = require('./routes/viewProposalRoute')
+const viewProposalRoute = require('./routes/viewProposalRoute');
 const badgeRoute = require('./routes/badgeRoute');
 const searchRoute = require('./routes/searchQueryRoute');
 const paymentRoute = require('./routes/paymentRoute');
 const adminRoute = require('./routes/adminRoute');
 const likeRoute = require('./routes/likesRoute');
-const qrCodeRoute = require('./routes/qrCodeViewRoute')
+const qrCodeRoute = require('./routes/qrCodeViewRoute');
 const shareWpRoute = require('./routes//shareWpRoute');
 const addressRoute = require('./routes/addressRoute');
 const route = require('./routes/addressRoute');
+const hastagsRoute = require('./routes/hastagsRoute');
+const fileUpload = require('express-fileupload')
 
 app.use(cors());
 
@@ -33,11 +35,14 @@ app.use(express.urlencoded({extended:true}));
 // app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended:true}))
 
 
+app.use(express.json({limit: '50mb', extended: true}));
+app.use(express.urlencoded( {limit: '50mb', extended: true}));
 
-// app.use(express.json());
-// app.use(express.urlencoded({extended:true}));
+// app.use(fileUpload());
 app.use(candidateRoute);
 app.use(usersRoute);
 app.use(postsRoute);
@@ -54,6 +59,7 @@ app.use(likeRoute);
 app.use(qrCodeRoute);
 app.use(shareWpRoute);
 app.use(addressRoute);
+app.use(hastagsRoute);
 
 
 const PORT = process.env.PORT || 3333;
