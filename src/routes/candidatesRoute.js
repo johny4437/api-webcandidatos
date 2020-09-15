@@ -32,6 +32,9 @@ const {createHastag, readHastags} = require('../controllers/Hastags/Hastags');
 
 var profilePicUpload = upload.single('profile_pic');
 var coverPicUpload = upload.single('cover_pic');
+const path = require('path')
+
+require('dotenv').config({path:path.resolve (__dirname ,'..', '.env')})
 
 
 route.post('/candidates/singup', createCandidate);
@@ -59,7 +62,7 @@ route.post('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate
       try {
         const candidate = {
           id,
-          profile_pic: `https://api.webcandidatos.com.br/files/${req.file.filename}`,
+          profile_pic: `${process.env.HOST_URL}/${req.file.filename}`,
           updated_at: new Date(),
         }
         console.log(candidate)
@@ -86,7 +89,7 @@ route.post('/candidates/update/cover_pic/:candidate_id', auth, isAuthCandidate, 
       try {
         const candidate = {
           id,
-          cover_pic: `https://api.webcandidatos.com.br/files/${req.file.filename}`,
+          cover_pic: `${process.env.HOST_URL}/${req.file.filename}`,
           updated_at: new Date(),
         }
         console.log(candidate)
