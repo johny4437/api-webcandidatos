@@ -2,6 +2,8 @@ const route = require('express').Router();
 const multerConfig = require('../config/multer');
 const multer = require('multer')
 var upload = multer(multerConfig);
+
+const knex = require('../database/connection');
 const { 
     createCandidate, 
     readCandidates,
@@ -15,7 +17,9 @@ const {
     forgotPassword,
     resetPassword,
     updateProfilePic,
-    setNewForgotPass
+    setNewForgotPass,
+    removeProfilePic,
+    removeCoverPic
     
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
@@ -26,7 +30,8 @@ const {readViewPost} = require('../controllers/ViewPost/ViewPost')
 const {createBadge, readBadges, updateBadge} = require('../controllers/BadgeCandidates/Badges');
 const {createHastag, readHastags} = require('../controllers/Hastags/Hastags');
 
-var cpUpload = upload.single('profile_pic');
+var profilePicUpload = upload.single('profile_pic');
+var coverPicUpload = upload.single('cover_pic');
 
 
 route.post('/candidates/singup', createCandidate);
@@ -44,7 +49,63 @@ route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandida
 route.get('/candidates/singout',singout);
 route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandidate)
 route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
-route.put('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate,updateProfilePic)
+route.post('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate, (req, res) => {
+  profilePicUpload(req, res, async (err) => {
+    
+    if(!err){
+      //faz a atualização do usuário
+      const id = req.params.candidate_id;
+
+      try {
+        const candidate = {
+          id,
+          profile_pic: `https://api.webcandidatos.com.br/files/${req.file.filename}`,
+          updated_at: new Date(),
+        }
+        console.log(candidate)
+        await knex('candidates').select('id')
+          .where('id', id)
+          .update(candidate)
+  
+        res.status(200).json({message:"Foto atualizada com sucesso!"})
+      } catch (error) {
+        console.log(error)
+        res.status(400).json("Erro ao atualizar foto "+error) 
+      }
+    }       
+  });
+})
+
+route.post('/candidates/update/cover_pic/:candidate_id', auth, isAuthCandidate, (req, res) => {
+  coverPicUpload(req, res, async (err) => {
+
+    if(!err){
+      //faz a atualização do usuário
+      const id = req.params.candidate_id;
+
+      try {
+        const candidate = {
+          id,
+          cover_pic: `https://api.webcandidatos.com.br/files/${req.file.filename}`,
+          updated_at: new Date(),
+        }
+        console.log(candidate)
+        await knex('candidates').select('id')
+          .where('id', id)
+          .update(candidate)
+  
+        res.status(200).json({message:"Foto atualizada com sucesso!"})
+      } catch (error) {
+        console.log(error)
+        res.status(400).json("Erro ao atualizar foto "+error) 
+      }
+    }       
+  });
+})
+
+route.delete('/candidates/update/profile_pic/remove/:candidate_id', auth, isAuthCandidate, removeProfilePic)
+route.delete('/candidates/update/cover_pic/remove/:candidate_id', auth, isAuthCandidate, removeCoverPic)
+
 route.post('/candidates/singin',singin);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
