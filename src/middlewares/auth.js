@@ -3,7 +3,7 @@ const {JWT_SECRET} =  require('../variables')
 
 
 const auth = (req, res, next) =>{
-
+        console.log(req.body)
         const authHeader = req.headers.authorization;
 
         if(!authHeader){

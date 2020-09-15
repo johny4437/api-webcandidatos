@@ -200,7 +200,8 @@ exports.getSomeCandidateData = async (req, res) =>{
     'description',
     'profile_pic',
     'badges',
-    'proposals'
+    'proposals',
+    'cover_pic'
     );
     
     const stateId = candidate[0].state_id;
@@ -374,9 +375,9 @@ exports.updateCandidate = async (req, res) => {
         cpf,
         description,
         profile_pic: profile_pic,
-        url_profile_pic:`http://192.169.0.110/files/${profile_pic}`,
+        url_profile_pic:`https://api.webcandidatos.com.br/files/${profile_pic}`,
         cover_pic:cover_pic,
-        url_cover_pic:`http://192.168.0.110/files/${cover_pic}`,
+        url_cover_pic:`https://api.webcandidatos.com.br/files/${cover_pic}`,
         status: 'actived', //actived | deactived | verified
         updated_at:new Date(),
         badges,
@@ -426,26 +427,29 @@ exports.updateCandidate = async (req, res) => {
 // UPDATE PROFILE PIC
 // =======================================================================================
 exports.updateProfilePic = async (req, res) =>{
-  const profile_pic = req.body.profile_pic;
+  
+  console.log('req.body = ')
   console.log(req.body)
+  const profile_pic = req.body.profile_pic;
   const id = req.params.candidate_id;
   const cand = {
     profile_pic
   }
+
   console.log(profile_pic)
 
-await knex('candidates').select('*').where('id',id).then(data=>{
-  if(data.length !==0){
-    // console.log(data[0].id)
-    return knex('candidates').where('id', data[0].id).update(cand).then(()=>{
-      res.status(200).json({msg:"PROFILE PIC UPDATED"})
-    }).catch(()=>{
-      res.status(400).json({msg:"ERROR TO UPDATE PROFILE PIC"})
-    })
-  }else{
-    res.status(400).json({msg:"USER NOT FOUND"})
-  }
-})
+  await knex('candidates').select('*').where('id',id).then(data=>{
+    if(data.length !==0){
+      // console.log(data[0].id)
+      return knex('candidates').where('id', data[0].id).update(cand).then(()=>{
+        res.status(200).json({msg:"PROFILE PIC UPDATED"})
+      }).catch(()=>{
+        res.status(400).json({msg:"ERROR TO UPDATE PROFILE PIC"})
+      })
+    }else{
+      res.status(400).json({msg:"USER NOT FOUND"})
+    }
+  })
 
 }
 
@@ -621,6 +625,78 @@ exports.singout=() =>{
   return res.json({message:"Singout Sucess"});
 }
 
+
+exports.removeProfilePic = async (req, res) => {
+
+  const id = req.params.candidate_id;
+  
+  const candidate = await knex('candidates').where('id',id).select('profile_pic');
+
+  console.log(candidate[0].profile_pic)
+  try {
+    const pathFile = candidate[0].profile_pic.split("/")
+    
+    fs.unlink(path.resolve(__dirname, '..' ,'..', '..', 'tmp', 'uploads')+'/'+pathFile[4], (err) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+    
+      //file removed
+    })
+    //file removed
+
+    //atualiza a foto do usuário para null
+    const updatedCandidate = {
+      id,
+      profile_pic: null,
+      updated_at: new Date(),
+    }
+    
+    await knex('candidates').select('id')
+      .where('id', id)
+      .update(updatedCandidate)
+    res.status(200).json({message:"Foto removida com sucesso!"})
+  } catch(error) {
+    res.status(400).json("> Erro ao remover foto "+error) 
+  }
+}
+
+exports.removeCoverPic = async (req, res) => {
+
+  const id = req.params.candidate_id;
+  
+  const candidate = await knex('candidates').where('id',id).select('cover_pic');
+
+  console.log(candidate[0].cover_pic)
+  try {
+    const pathFile = candidate[0].cover_pic.split("/")
+    
+    fs.unlink(path.resolve(__dirname, '..' ,'..', '..', 'tmp', 'uploads')+'/'+pathFile[4], (err) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+    
+      //file removed
+    })
+    //file removed
+
+    //atualiza a foto do usuário para null
+    const updatedCandidate = {
+      id,
+      cover_pic: null,
+      updated_at: new Date(),
+    }
+    
+    await knex('candidates').select('id')
+      .where('id', id)
+      .update(updatedCandidate)
+    res.status(200).json({message:"Foto removida com sucesso!"})
+  } catch(error) {
+    res.status(400).json("> Erro ao remover foto "+error) 
+  }
+}
 
 
 
