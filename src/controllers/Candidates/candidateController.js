@@ -85,9 +85,9 @@ exports.createCandidate = async (req, res) =>{
         login:generatedLogin,
         state_id,
         cpf,
-        telephone,
-        status: 'actived', //actived | deactived | verified
+        telephone, //actived | deactived | verified
         qrcode:qrcode,
+
       };
        const transporter = nodemailer.createTransport({
           pool: true,
@@ -99,6 +99,16 @@ exports.createCandidate = async (req, res) =>{
             pass: "ImaG9tC8pWJ5"
             }
          });
+        const mailOptions = {
+      from: 'noreply@webcandidatos.com.br',
+      to: email,
+      subject: 'Confirmação de Cadastro',
+      text:`${name} sua conta foi criada com sucesso`
+      +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
+      +`http://127.0.0.1:3000/candidates/login.\n\n`
+      +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
+
+        };
 
       try{
         await knex('candidates')
@@ -121,11 +131,11 @@ exports.createCandidate = async (req, res) =>{
                         }
                          res.status(200).json(data);
 
-                }}).catch(() =>{
-                  res.status(400).json({msg:'User Not Inserted'})
-                });   
+                }}) 
                   
-              })
+              }).catch(() =>{
+                  res.status(400).json({msg:'User Not Inserted'})
+                });  
             }else{
               return res.status(404).json({message:"Este usuário já está cadastrado"})
 
@@ -492,20 +502,28 @@ exports.singin = async (req, res) =>{
 if(email != ''){
   if(password != ''){
       knex('candidates').where('email', email)
-                      .select('password','id', 'name','login')
+                      .select('password','id', 'name','login', 'status')
                       .first()
                       .then(user =>{
+                        
                         if(!user){
-                          res.status(401).json({
-                            error: "USER NOt EXISTS"
-                         })
-                        }else{
-                          return comparePassword(password, user.password)
+                          res.json(
+                           "Este usuario nao esta cadastrado"
+                         )
+                          
+                        }
+
+                        else{
+
+                           if(user.status == 'deactived'){
+                             res.json('usuário desativado')
+                           }else{
+                              return comparePassword(password, user.password)
                                   .then(isAuthenticated=>{
                                     if(!isAuthenticated){
-                                      res.status(401).json({
-                                        error: "WRONG PASSWORD"
-                                      })
+                                      res.json(
+                                       "WRONG PASSWORD"
+                                      )
                                     }else{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)
                                       //persistindo token
@@ -516,6 +534,7 @@ if(email != ''){
                                       res.status(200).json({token, id})
                                     }
                                   })
+                           }
                         }
                       })
 
