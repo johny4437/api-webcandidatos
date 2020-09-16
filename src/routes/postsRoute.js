@@ -4,15 +4,16 @@ const multer = require('multer')
 var upload = multer(multerConfig);
 const auth = require('../middlewares/auth');
 const {candidateId, isAuthCandidate} = require('../middlewares/candidateAuth');
-const {createPost,removePost,updatePost, listAllPosts} = require('../controllers/Posts/postController');
+const {createPost,removePost,updatePost, listAllPosts, listAllPostsLogin} = require('../controllers/Posts/postController');
 
 
 
 
 
-route.post('/posts/create/:candidate_id',auth, isAuthCandidate,upload.array('photo', 12),createPost);
-route.put('/posts/update/:candidate_id',auth, isAuthCandidate,upload.array('photo', 12),updatePost);
+route.post('/posts/create/:candidate_id',auth, isAuthCandidate, upload.array('photo', 12), createPost);
+route.put('/posts/update/:candidate_id',auth, isAuthCandidate, upload.array('photo', 12), updatePost);
 route.get('/posts/:candidate_id', listAllPosts);
+route.get('/posts/login/:login', listAllPostsLogin);
 route.delete('/posts/remove/:candidate_id/', auth, isAuthCandidate, removePost);
 
 

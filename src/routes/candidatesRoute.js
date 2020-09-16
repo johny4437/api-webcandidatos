@@ -65,14 +65,14 @@ route.post('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate
           profile_pic: `${process.env.HOST_URL}/${req.file.filename}`,
           updated_at: new Date(),
         }
-        console.log(candidate)
+        //console.log(candidate)
         await knex('candidates').select('id')
           .where('id', id)
           .update(candidate)
   
         res.status(200).json({message:"Foto atualizada com sucesso!"})
       } catch (error) {
-        console.log(error)
+        //console.log(error)
         res.status(400).json("Erro ao atualizar foto "+error) 
       }
     }       
@@ -92,14 +92,14 @@ route.post('/candidates/update/cover_pic/:candidate_id', auth, isAuthCandidate, 
           cover_pic: `${process.env.HOST_URL}/${req.file.filename}`,
           updated_at: new Date(),
         }
-        console.log(candidate)
+        //console.log(candidate)
         await knex('candidates').select('id')
           .where('id', id)
           .update(candidate)
   
         res.status(200).json({message:"Foto atualizada com sucesso!"})
       } catch (error) {
-        console.log(error)
+        //console.log(error)
         res.status(400).json("Erro ao atualizar foto "+error) 
       }
     }       

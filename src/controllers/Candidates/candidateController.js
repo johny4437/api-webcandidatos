@@ -422,15 +422,15 @@ exports.updateCandidate = async (req, res) => {
 // =======================================================================================
 exports.updateProfilePic = async (req, res) =>{
   
-  console.log('req.body = ')
-  console.log(req.body)
+  //console.log('req.body = ')
+  //console.log(req.body)
   const profile_pic = req.body.profile_pic;
   const id = req.params.candidate_id;
   const cand = {
     profile_pic
   }
 
-  console.log(profile_pic)
+  //console.log(profile_pic)
 
   await knex('candidates').select('*').where('id',id).then(data=>{
     if(data.length !==0){
@@ -626,7 +626,7 @@ exports.removeProfilePic = async (req, res) => {
   
   const candidate = await knex('candidates').where('id',id).select('profile_pic');
 
-  console.log(candidate[0].profile_pic)
+  //console.log(candidate[0].profile_pic)
   try {
     const pathFile = candidate[0].profile_pic.split("/")
     
@@ -662,7 +662,7 @@ exports.removeCoverPic = async (req, res) => {
   
   const candidate = await knex('candidates').where('id',id).select('cover_pic');
 
-  console.log(candidate[0].cover_pic)
+  //console.log(candidate[0].cover_pic)
   try {
     const pathFile = candidate[0].cover_pic.split("/")
     
