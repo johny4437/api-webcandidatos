@@ -363,7 +363,7 @@ exports.updateCandidate = async (req, res) => {
         }
         
       })
-      console.log(cover_pic)
+      //console.log(cover_pic)
 
       const candidate = {
         id,
@@ -376,7 +376,7 @@ exports.updateCandidate = async (req, res) => {
         state_id,
         cpf,
         description,
-        status: 'actived', //actived | deactived | verified
+        //status: 'actived', //actived | deactived | verified
         updated_at:new Date(),
         badges,
         proposals
@@ -500,50 +500,50 @@ exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
 
-if(email != ''){
-  if(password != ''){
-      knex('candidates').where('email', email)
-                      .select('password','id', 'name','login')
-                      .first()
-                      .then(user =>{
-                        if(!user){
+  if(email != ''){
+    if(password != ''){
+      knex('candidates')
+          .where('email', email)
+          //.where('status', 'actived')
+          .select('password','id', 'name','login')
+          .first()
+          .then(user =>{
+            console.log(user)
+            if(!user){
+              //console.log('> if')
+              res.status(401).json({
+                error: "Conta pendente de aprovação."
+              })
+            }else{
+              ///console.log('> else')
+              //console.log(user)
+              return comparePassword(password, user.password)
+                      .then(isAuthenticated=>{
+                        if(!isAuthenticated){
                           res.status(401).json({
-                            error: "USER NOt EXISTS"
-                         })
+                            error: "WRONG PASSWORD"
+                          })
                         }else{
-                          return comparePassword(password, user.password)
-                                  .then(isAuthenticated=>{
-                                    if(!isAuthenticated){
-                                      res.status(401).json({
-                                        error: "WRONG PASSWORD"
-                                      })
-                                    }else{
-                                      const token = jwt.sign({id:user.id}, JWT_SECRET)
-                                      //persistindo token
-                                      res.cookie('t', token, {expire:new Date() + 8888})
-                                     
-                                      let id= user.id
-                                      
-                                      res.status(200).json({token, id})
-                                    }
-                                  })
+                          const token = jwt.sign({id:user.id}, JWT_SECRET)
+                          //persistindo token
+                          res.cookie('t', token, {expire:new Date() + 8888})
+                          let id= user.id
+                          res.status(200).json({token, id})
                         }
                       })
-
-
-
-
-  }else{
-    res.json('Senha não fornecida')
-  }
-  
-}else{
-  res.json('Email não fornecido')
-}
-
-  
-
+              }
+            }).catch(err =>{
+              res.status(400).json(err)
+            })
+      
+      //res.status(400).json('Conta pendente de aprovação.')
+    }else{
+      res.json('Senha não fornecida')
+    }
     
+  }else{
+    res.json('Email não fornecido')
+  }
 };
 
 
