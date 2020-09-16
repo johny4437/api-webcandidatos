@@ -24,7 +24,7 @@ const shareWpRoute = require('./routes//shareWpRoute');
 const addressRoute = require('./routes/addressRoute');
 const route = require('./routes/addressRoute');
 const hastagsRoute = require('./routes/hastagsRoute');
-const fileUpload = require('express-fileupload')
+const formContactRoute = require('./routes/formContactRoute')
 
 app.use(cors());
 
@@ -33,7 +33,7 @@ app.use(cors());
 
 // app.use(bodyParser.json())
 // app.use(bodyParser.urlencoded({ extended: true }))
-
+// app.use(express.json({limit: '2100mb', extended: true}));
 app.use('/files', express.static(path.resolve(__dirname,'..','tmp','uploads')))
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended:true}))
@@ -61,6 +61,7 @@ app.use(qrCodeRoute);
 app.use(shareWpRoute);
 app.use(addressRoute);
 app.use(hastagsRoute);
+app.use(formContactRoute)
 
 
 const PORT = process.env.PORT || 3333;

@@ -3,7 +3,7 @@ const knex = require('../../database/connection');
 exports.create = async (req, res) => {
 
     const candidate_id = req.params.candidate_id;
-    console.log(candidate_id)
+    // console.log(candidate_id)
 
     const {
         platform, 
