@@ -11,30 +11,31 @@ exports.createPost =  (req, res) => {
     const candidate_id = req.params.candidate_id; 
     const { title, description } = req.body;
 
- 
-
     const post = {
         title,
         description,
         candidate_id
     }
 
-
     //console.log(req.files)
 
     if(req.files){
+        console.log('> filees')
+        console.log(req.files)
         let path = '';
         let name = '';
         req.files.forEach(function(files,index, arr){
             path = path + files.path + ','
-            name =  name + files.filename + ','
+            name = name + process.env.HOST_URL +"/"+ files.filename + ','
         })
         path = path.substring(0, path.lastIndexOf(","))
         name = name.substring(0, name.lastIndexOf(","))
         
         post.photo = path;
 
-       post.photo_url = process.env.HOST_URL +"/"+name;
+        post.photo_url = name;
+    }else{
+      console.log('> nao veio arquivos')
     }
 
     console.log(post)
@@ -76,7 +77,7 @@ exports.updatePost =  (req, res) => {
         
         post.photo = path;
 
-       post.photo_url = `http://localhost:3333/files/${name}`;
+       post.photo_url = `${process.env.HOST_URL}/${name}`;
     }
 
     console.log(post)
@@ -88,11 +89,36 @@ exports.updatePost =  (req, res) => {
  //LISTA TODOS OS POSTS PARA UM CANDIDATO ESPECIFICO
 
  exports.listAllPosts = (req, res) =>{
-     const id = req. params.candidate_id;
-     knex('posts').select('title','description','id').where('candidate_id', id)
+     const id = req.params.candidate_id;
+     knex('posts')
+      .select('title','description','id', 'photo_url', 'createdAt')
+      .where('candidate_id', id)
+      .orderBy('id', 'desc')
         .then(data =>{
            res.json(data)
         })
+}
+
+exports.listAllPostsLogin = async (req, res) =>{
+  const login = req.params.login
+
+  try {
+    const candidate = await knex('candidates').where('login', login).select('id')
+
+    const id = candidate[0].id
+
+    knex('posts')
+      .select('title','description','id', 'photo_url', 'createdAt')
+      .where('candidate_id', id)
+      .orderBy('id', 'desc')
+        .then(data =>{
+            res.status(200).json(data)
+        })
+
+  } catch (error) {
+    res.status(400).json({msg:"Erro ao carregar publicações"})
+  }
+  
 }
 
 exports.removePost = (req, res) => {
