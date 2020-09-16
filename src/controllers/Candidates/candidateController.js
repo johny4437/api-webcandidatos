@@ -29,7 +29,8 @@ exports.createCandidate = async (req, res) =>{
     telephone,
     state_id,
     cpf,
-    passwordAgain
+    passwordAgain,
+    voucher
   } = req.body
 
   //verificar se os campos tem dados válidos, senão enviar um erro
@@ -108,7 +109,7 @@ exports.createCandidate = async (req, res) =>{
         state_id,
         cpf,
         telephone,
-        status: 'actived', //actived | deactived | verified
+        status: voucher === 'hagoromo2020' || voucher === 'hellesantos2020' || voucher === 'paulasg2020' ? 'actived' : 'deactived', //actived | deactived | verified
         qrcode:qrcode,
       };
 
@@ -504,7 +505,7 @@ exports.singin = async (req, res) =>{
     if(password != ''){
       knex('candidates')
           .where('email', email)
-          //.where('status', 'actived')
+          .where('status', 'actived')
           .select('password','id', 'name','login')
           .first()
           .then(user =>{
