@@ -111,7 +111,7 @@ exports.createCandidate = async (req, res) =>{
         status: 'actived', //actived | deactived | verified
         qrcode:qrcode,
       };
-      
+
       try{
         await knex('candidates')
           .select('cpf','id')
@@ -206,6 +206,7 @@ exports.getSomeCandidateData = async (req, res) =>{
     
     const stateId = candidate[0].state_id;
     const cityId = candidate[0].city_id;
+      
     
     const hs = await knex('hastags').select('hastag').where('candidate_id', candidate_id)
 
@@ -218,8 +219,8 @@ exports.getSomeCandidateData = async (req, res) =>{
 
     const user = {
       ...candidate[0],
-      state_id: stateId,
-      city_id: cityId,
+      state: stateId,
+      city: cityId,
       hastags: hastags.join(' #'),
     }
     
@@ -310,6 +311,8 @@ exports.updateCandidate = async (req, res) => {
       badges,
       proposals
     } = req.body;
+
+    // console.log(cover_pic)
     try {      
       
       let hashtagsArr = hastags.split('#')
@@ -360,6 +363,7 @@ exports.updateCandidate = async (req, res) => {
         }
         
       })
+      console.log(cover_pic)
 
       const candidate = {
         id,
@@ -399,22 +403,53 @@ exports.updateCandidate = async (req, res) => {
    exports.updatePassword = async (req, res) =>{
     
      const candidate_id = req.params.candidate_id;
-      const password = hashPassword(req.body.password);
-      const hash = password.hash;
 
-      const candidate = {
-        password:hash
-      }
-      try {
-        await knex('candidates').select('id')
-        .where('id', candidate_id)
-        .update(candidate)
+       const {old_password, password_1, password_2} = req.body 
 
-    res.status(200).json({message:"PASSWORD UPDATED"})
-      } catch (error) {
-        res.status(400).json({message:"ERROR TO UPDATE PASSWORD "})
-      }
-   }
+
+
+       if(old_password!=""){
+           const verify_old_pass = await knex('candidates').select("password").where('id', candidate_id);
+           
+           comparePassword(old_password, verify_old_pass[0].password).then(data =>{
+             if(!data){
+               res.json('Senha antiga está incorreta')
+             }else{
+
+               if(password_1!=""){
+                 const password = hashPassword(password_1)
+                     const hash = password.hash
+                     const candidate = {
+                       password:hash
+                     }
+                     if(password_1 === password_2){
+
+                       return knex('candidates').select('id').where('id', candidate_id).update(candidate)
+                     .then(()=>{
+                       res.status(200).json("Senha Atualizada")
+                     }).catch(()=>{
+                       res.status(404).json("Erro ao atualizar senha")
+                     })
+
+
+                     }else{
+                       res.json('As senhas precisam ser iguais')
+                     }
+                   
+                 }else{
+                     res.json('insira uma  nova senha por favor')
+                 }
+
+             }
+           })
+           
+
+       }else{
+         res.json('É necessário passar senha antiga')
+       }
+
+       // .status(404)
+    }
     
 
 // ======================================================================================
@@ -465,10 +500,9 @@ exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
 
-
-  
-
-    knex('candidates').where('email', email)
+if(email != ''){
+  if(password != ''){
+      knex('candidates').where('email', email)
                       .select('password','id', 'name','login')
                       .first()
                       .then(user =>{
@@ -495,29 +529,44 @@ exports.singin = async (req, res) =>{
                                   })
                         }
                       })
+
+
+
+
+  }else{
+    res.json('Senha não fornecida')
+  }
+  
+}else{
+  res.json('Email não fornecido')
+}
+
+  
+
+    
 };
 
 
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
-
-  const transporter = nodemailer.createTransport({
-    pool: true,
-    host: "mail.webcandidatos.com.br",
-    port: 465,
-    secure: true, // use TLS
-    auth: {
-        user: "noreply@webcandidatos.com.br",
-        pass: "ImaG9tC8pWJ5"
-    }
-  });
+  if(email != ''){
+     const transporter = nodemailer.createTransport({
+          pool: true,
+          host: "mail.webcandidatos.com.br",
+          port: 465,
+          secure: true, // use TLS
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD
+            }
+         });
   
 
 
   await knex('candidates').select('*').where('email', email)
   .then(candidateData =>{
     if(candidateData.length === 0) {
-      res.status(400).json({msg: "USER WITH THIS EMAIL DON'T EXIST"})
+      res.json( "Usuário com esse email não existe")
     }else {
 
       const token =jwt.sign({id: candidateData.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
@@ -561,6 +610,14 @@ exports.forgotPassword = async (req, res) =>{
       
     }
   })
+
+
+
+  }else{
+    res.status(404).json('É preciso inserir o email cadastrado')
+  }
+ 
+     
 };
 
 exports.resetPassword = async(req, res) =>{
@@ -601,16 +658,26 @@ exports.resetPassword = async(req, res) =>{
 
 
 exports.setNewForgotPass = async(req, res) =>{
-  const {email,password} = req.body
-  const newPass = hashPassword(password);
-  const hash = newPass.hash
-const cand ={
-  password:hash
-}
+  const {email,password, confirm_pass} = req.body
 
-              await knex('candidates').select('*').where('email', email).update(cand)
-              .then(()=>res.json({msg:"Password was Updated"}))
-              .catch((err)=>res.json({msg:"Password was not Updated"}))
+  
+    if(password === confirm_pass){
+            const newPass = hashPassword(password);
+            const hash = newPass.hash
+            const cand ={
+                password:hash
+              }
+
+                  await knex('candidates').select('*').where('email', email).update(cand)
+                  .then(()=>res.json({msg:"Password was Updated"}))
+                  .catch((err)=>res.json({msg:"Password was not Updated"}))
+    }else{
+     console.log('As senhas precisam ser iguais')
+    }
+
+  
+
+  
 
 }
 

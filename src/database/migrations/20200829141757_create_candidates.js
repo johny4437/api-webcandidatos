@@ -11,9 +11,9 @@ exports.up = function(knex) {
 		table.text('coalition');
     table.text('telephone').notNullable();    
 		table.integer('city_id').notNullable()
-		//table.foreign('city').references('id').inTable('cidades');
+		table.foreign('city_id').references('id').inTable('cidades');
 		table.integer('state_id').notNullable()
-		//table.foreign('state').references('id').inTable('estados');
+		table.foreign('state_id').references('id').inTable('estados');
 		table.string('cpf').unique().notNullable()
 		table.text('number');
     table.text('description');

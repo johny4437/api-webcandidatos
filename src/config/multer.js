@@ -18,7 +18,7 @@ module.exports ={
         }
     }),
     limits:{
-        fileSize: 5* 1024 * 1024
+        fileSize: 100 * 1024 * 1024
     },
     fileFilter:(req, file, cb) =>{
         const allowedMimes = [
@@ -26,7 +26,9 @@ module.exports ={
             "image/jpg",
             "image/png",
             "image/pjpeg",
-            "video/mp4"
+            "video/mp4",
+            "video/avi",
+            "video/mkv",
         ];
 
         if(allowedMimes.includes(file.mimetype)){
