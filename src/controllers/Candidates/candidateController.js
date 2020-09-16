@@ -192,6 +192,7 @@ exports.getSomeCandidateData = async (req, res) =>{
     
     const stateId = candidate[0].state_id;
     const cityId = candidate[0].city_id;
+      
     
     const hs = await knex('hastags').select('hastag').where('candidate_id', candidate_id)
 
@@ -204,8 +205,8 @@ exports.getSomeCandidateData = async (req, res) =>{
 
     const user = {
       ...candidate[0],
-      state_id: stateId,
-      city_id: cityId,
+      state: stateId,
+      city: cityId,
       hastags: hastags.join(' #'),
     }
     
@@ -298,6 +299,8 @@ exports.updateCandidate = async (req, res) => {
       badges,
       proposals
     } = req.body;
+
+    // console.log(cover_pic)
     try {      
       
       let hashtagsArr = hastags.split('#')
@@ -348,6 +351,7 @@ exports.updateCandidate = async (req, res) => {
         }
         
       })
+      console.log(cover_pic)
 
       const candidate = {
         id,
@@ -391,22 +395,53 @@ exports.updateCandidate = async (req, res) => {
    exports.updatePassword = async (req, res) =>{
     
      const candidate_id = req.params.candidate_id;
-      const password = hashPassword(req.body.password);
-      const hash = password.hash;
 
-      const candidate = {
-        password:hash
-      }
-      try {
-        await knex('candidates').select('id')
-        .where('id', candidate_id)
-        .update(candidate)
+       const {old_password, password_1, password_2} = req.body 
 
-    res.status(200).json({message:"PASSWORD UPDATED"})
-      } catch (error) {
-        res.status(400).json({message:"ERROR TO UPDATE PASSWORD "})
-      }
-   }
+
+
+       if(old_password!=""){
+           const verify_old_pass = await knex('candidates').select("password").where('id', candidate_id);
+           
+           comparePassword(old_password, verify_old_pass[0].password).then(data =>{
+             if(!data){
+               res.json('Senha antiga está incorreta')
+             }else{
+
+               if(password_1!=""){
+                 const password = hashPassword(password_1)
+                     const hash = password.hash
+                     const candidate = {
+                       password:hash
+                     }
+                     if(password_1 === password_2){
+
+                       return knex('candidates').select('id').where('id', candidate_id).update(candidate)
+                     .then(()=>{
+                       res.status(200).json("Senha Atualizada")
+                     }).catch(()=>{
+                       res.status(404).json("Erro ao atualizar senha")
+                     })
+
+
+                     }else{
+                       res.json('As senhas precisam ser iguais')
+                     }
+                   
+                 }else{
+                     res.json('insira uma  nova senha por favor')
+                 }
+
+             }
+           })
+           
+
+       }else{
+         res.json('É necessário passar senha antiga')
+       }
+
+       // .status(404)
+    }
     
 
 // ======================================================================================
@@ -419,7 +454,7 @@ exports.updateProfilePic = async (req, res) =>{
   const cand = {
     profile_pic
   }
-  console.log(profile_pic)
+  
 
 await knex('candidates').select('*').where('id',id).then(data=>{
   if(data.length !==0){
@@ -510,8 +545,8 @@ exports.forgotPassword = async (req, res) =>{
           port: 465,
           secure: true, // use TLS
           auth: {
-            user: "noreply@webcandidatos.com.br",
-            pass: "ImaG9tC8pWJ5"
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD
             }
          });
 
