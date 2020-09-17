@@ -14,24 +14,25 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createUser = async(req, res) => {
     
-    const { name, email } = req.body;
-    const id = crypto.randomBytes(10).toString('hex');
+    const {  email, confirm_password, password } = req.body;
+    
+
+    if(email !='' && password !=''){
+        if(password === confirm_password ){
+                 const id = crypto.randomBytes(10).toString('hex');
     // concatena id com milisegundos
 
-    const newId = id + Date.now();
+                const newId = id + Date.now();
     
-    const hash=  hashPassword(req.body.password);
-    const password = hash.hash;
-    const profile_pic = req.file.filename;
-    const photo_url = process.env.HOST_URL+"/"+profile_pic;
+                const hash=  hashPassword(password);
+                const new_password = hash.hash;
+
 
     const user = {
         id:newId,
-        name, 
         email,
-        password,
-        profile_pic,
-        photo_url
+        password:new_password,
+        
     }
 
    await knex('users').select('email').where('email',email)
@@ -40,13 +41,26 @@ exports.createUser = async(req, res) => {
                 return knex('users')
                 .returning('id')
                 .insert(user)
-                .then(()=> res.status(200).json({message:"User created"}));
+                .then(()=> res.status(200).json('usuário criado com sucesso'));
             }else{
-                return res.status(400).json({message:"User already exists"})
+                return res.status(400).json('usuário já existe')
             }
             
 
         })
+
+        }
+
+        else{
+            res.status(400).json('As senhas precisam ser iguais')
+        }
+        
+    
+
+    }else{
+        res.status(400).json('É preciso inserir todos os dados ')
+    }
+   
 
 };
 // READ CONTROLLER

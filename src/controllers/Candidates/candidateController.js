@@ -498,18 +498,48 @@ exports.removeCandidate = (req,res) => {
 exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
+ 
 
 if(email != ''){
   if(password != ''){
-      knex('candidates').where('email', email)
+     await knex('candidates').where('email', email)
                       .select('password','id', 'name','login', 'status')
                       .first()
                       .then(user =>{
                         
                         if(!user){
-                          res.json(
-                           "Este usuario nao esta cadastrado"
-                         )
+                         return  knex('users').where('email', email)
+                          .select('password','id', 'name')
+                          .first()
+                          .then(user_2 =>{
+                           
+                            if(!user_2){
+                              res.json("Este usuario nao esta cadastrado")
+                            }else{
+                              
+                              return comparePassword(password, user_2.password)
+                                  .then(isAuthenticated=>{
+                                    if(!isAuthenticated){
+                                      res.json(
+                                       "WRONG PASSWORD"
+                                      )
+                                    }else{
+                                      const token = jwt.sign({id:user_2.id}, JWT_SECRET)
+                                      //persistindo token
+                                      res.cookie('t', token, {expire:new Date() + 8888})
+                                     
+                                      let id= user_2.id
+                                      
+                                      
+                                      res.status(200).json({token, id})
+                                    }
+                                  })
+                           
+
+                            }
+
+                          })
+                          
                           
                         }
 
@@ -530,8 +560,9 @@ if(email != ''){
                                       res.cookie('t', token, {expire:new Date() + 8888})
                                      
                                       let id= user.id
+                                      let username= user.login
                                       
-                                      res.status(200).json({token, id})
+                                      res.status(200).json({token, id, username})
                                     }
                                   })
                            }
