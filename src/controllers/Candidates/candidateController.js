@@ -760,7 +760,30 @@ exports.removeCoverPic = async (req, res) => {
   }
 }
 
-
+exports.listCandidatesCity = async (req, res) =>{
+  const city = req.params.city_id
+  
+  const candidates = await knex('candidates')
+      .select(
+        'id',
+        'name',
+        'party',
+        'coalition',
+        'city_id',
+        'state_id',
+        'number',
+        'profile_pic',
+      )
+      .where('city_id', city)
+      .orderBy('name', 'asc')
+  
+  if(candidates.length > 0){
+    //console.log(candidates.length)
+    res.status(200).json(candidates) 
+  }else{
+    res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+  }
+};
 
 
 

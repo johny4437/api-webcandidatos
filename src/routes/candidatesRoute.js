@@ -19,7 +19,8 @@ const {
     updateProfilePic,
     setNewForgotPass,
     removeProfilePic,
-    removeCoverPic
+    removeCoverPic,
+    listCandidatesCity
     
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
@@ -46,7 +47,7 @@ route.post('/candidates/singup', createCandidate);
 route.get('/candidates', readCandidates);
 
 
-// route.get('/candidates/list',listCandidate)
+route.get('/candidates/list/city/:city_id', listCandidatesCity)
 route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
 route.get('/candidates/singout',singout);
