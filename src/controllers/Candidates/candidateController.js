@@ -121,17 +121,32 @@ exports.createCandidate = async (req, res) =>{
                 .insert(candidate)
                 .then(()=>{
 
-                  transporter.sendMail(mailOptions, function(error, info){
-                    if (error) {
-                           res.status(400).json(error);
-                    } else {
-                        let msg = 'Email sent. Follow the instructions';
-                        var data = {
-                          msg
-                        }
-                         res.status(200).json(data);
+                   const role = {
+                        roles:"1",
+                        user_id:newId
+                    }
+                    return knex('roles').insert(role).then(()=>{
+                           transporter.sendMail(mailOptions, function(error, info){
+                                if (error) {
+                                       res.status(400).json(error);
+                                  } else {
+                                  let msg = 'Email sent. Follow the instructions';
+                                  var data = {
+                                    msg
+                                  }
+                                   res.status(200).json(data);
 
-                }}) 
+                             }}) 
+
+
+
+                    })
+
+                    // .catch(()=>{
+                    //     res.status(400).json('Usuario nao criado')
+                    // })
+
+               
                   
               }).catch(() =>{
                   res.status(400).json({msg:'User Not Inserted'})
@@ -494,7 +509,7 @@ exports.removeCandidate = (req,res) => {
 
 }
 
-//CONTROLLER DE LOGIN PARA CANDIDATO
+//CONTROLLER DE LOGIN PARA CANDIDATO e USUARIO NO APP
 exports.singin = async (req, res) =>{
     
   const {email, password} = req.body;
@@ -584,6 +599,8 @@ if(email != ''){
 
     
 };
+
+
 
 
 exports.forgotPassword = async (req, res) =>{

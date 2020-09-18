@@ -41,7 +41,18 @@ exports.createUser = async(req, res) => {
                 return knex('users')
                 .returning('id')
                 .insert(user)
-                .then(()=> res.status(200).json('usuário criado com sucesso'));
+                .then(()=>{
+                    const role = {
+                        roles:"0",
+                        user_id:newId
+                    }
+                    return knex('roles').insert(role).then(()=>{
+                        res.status(200).json('usuário criado com sucesso')
+                    }).catch(()=>{
+                        res.status(400).json('Usuario nao criado')
+                    })
+                    
+                });
             }else{
                 return res.status(400).json('usuário já existe')
             }
@@ -74,10 +85,9 @@ exports.readUser = async (req, res) => {
 exports.updateUser =  async (req, res) => {
    
     const id = req.params.user_id;
-    const { name , email } = req.body;
-    const hash = hashPassword(req.body.password);
-    const password = hash.hash;
-
+    const { name  } = req.body;
+   
+   
     const profile_pic =  req.file.filename;
 
     const photo_url = process.env.HOST_URL/profile_pic;
@@ -85,8 +95,6 @@ exports.updateUser =  async (req, res) => {
     const user = {
         id,
         name,
-        email,
-        password,
         profile_pic,
         photo_url
     }
@@ -94,9 +102,15 @@ exports.updateUser =  async (req, res) => {
   await  knex('users').select('*')
     .where('id', id)
     .update(user)
+    .then(()=>{
+        res.json('Usuário atualizado')
+    })
+    .catch(()=>{
+        res.json('Usuário não atualizado')
+    })
 
 
-    res.json('updated')
+    
 
 
 };
