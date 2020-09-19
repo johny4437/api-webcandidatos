@@ -17,6 +17,10 @@ route.post('/user/singin', singin);
 route.get('/user/singout',singout)
 route.get('/user', readUser);
 route.put('/user/update/:user_id', auth, isAuth, upload.single('profile_pic'), updateUser);
+// FORGOT PASSWORD
+// ===========================================================================
+
+
 
 // =================================================================================
 // follow and unfollow route

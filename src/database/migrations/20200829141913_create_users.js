@@ -7,6 +7,7 @@ exports.up = function(knex) {
       table.text('password').notNullable();
       table.text('profile_pic');
       table.text('photo_url');
+      table.text('resetLink').defaultTo("");
       table.timestamp('createdAt').defaultTo(knex.fn.now());
       table.text('updated_at');
   })
