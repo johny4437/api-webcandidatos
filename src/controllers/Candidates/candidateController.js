@@ -839,10 +839,11 @@ exports.searchCandidates = async (req, res) =>{
   const city = req.params.city_id
   const role = req.params.role
 
+  console.log(req.params)
   //caso tenha passado o nome do candidato
   if(name && name != ''){
     //caso tenha passado o tipo do candidato
-    if(role && role != '' && role != undefined){
+    if(role && role != '' && role != undefined && role != 'undefined'){
       const candidates = await knex('candidates')
         .select(
           'id',
@@ -888,7 +889,7 @@ exports.searchCandidates = async (req, res) =>{
     }
   }else{ //caso seja vazia a busca
     //caso tenha passado o tipo do candidato
-    if(role && role != ''){
+    if(role && role != '' && role != undefined && role != 'undefined'){
       const candidates = await knex('candidates')
         .select(
           'id',
