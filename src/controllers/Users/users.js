@@ -10,7 +10,7 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createUser = async(req, res) => {
     
-    const {  email, confirm_password, password } = req.body;
+  const {  email, confirm_password, password,state_id, city_id } = req.body;
     
     if(email !='' && password !=''){
       if(password === confirm_password ){
@@ -38,6 +38,8 @@ exports.createUser = async(req, res) => {
                       id:newId,
                       email,
                       password:new_password,
+                      state_id,
+                      city_id
                     }
 
                     return knex('users')
@@ -72,10 +74,9 @@ exports.readUser = async (req, res) => {
 exports.updateUser =  async (req, res) => {
    
     const id = req.params.user_id;
-    const { name , email } = req.body;
-    const hash = hashPassword(req.body.password);
-    const password = hash.hash;
-
+    const { name  } = req.body;
+   
+   
     const profile_pic =  req.file.filename;
 
     const photo_url = process.env.HOST_URL/profile_pic;
@@ -83,18 +84,23 @@ exports.updateUser =  async (req, res) => {
     const user = {
         id,
         name,
-        email,
-        password,
         profile_pic,
         photo_url
     }
+    console.log(photo_url)
 
   await  knex('users').select('*')
     .where('id', id)
     .update(user)
+    .then(()=>{
+        res.json('Usuário atualizado')
+    })
+    .catch(()=>{
+        res.json('Usuário não atualizado')
+    })
 
 
-    res.json('updated')
+    
 
 
 };

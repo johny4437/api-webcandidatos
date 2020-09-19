@@ -8,6 +8,8 @@ exports.follow = async (req, res) => {
   const candidate = await knex('candidates')
       .select("id")
       .where('login', login)
+  
+  console.log(req.params)
 
   if(type_user === 'user'){ //usuário normal
     knex('followers').select('user_id').where('user_id',user_id).andWhere('candidate_id', candidate[0].id)
@@ -23,7 +25,7 @@ exports.follow = async (req, res) => {
           return res.status(400).json({msg:"YOU ARE ALREAD FOLLOWING"});
       })
   }else{
-    knex('followers').select('user_id').where('candidate',user_id).andWhere('candidate_id', candidate[0].id)
+    knex('followers').select('user_id').where('candidate', user_id).andWhere('candidate_id', candidate[0].id)
       .then(userData =>{
           if(userData.length === 0){
               return knex('followers').insert({
@@ -40,6 +42,8 @@ exports.follow = async (req, res) => {
 };
 
 exports.unfollow = async (req, res) =>{
+  console.log(req.params)
+
   const login = req.params.login
   const user_id = req.params.user_id
   const type_user = req.params.type_user //tipo do usuário que está fazendo a consulta, candidate ou user

@@ -23,8 +23,6 @@ exports.createCandidate = async (req, res) =>{
     name,
     email,
     number,
-    party,
-    coalition,
     city_id,
     telephone,
     state_id,
@@ -102,8 +100,6 @@ exports.createCandidate = async (req, res) =>{
         email,
         password,
         number,
-        party,
-        coalition,
         city_id,
         login:generatedLogin,
         state_id,
@@ -497,39 +493,45 @@ exports.removeCandidate = (req,res) => {
 
 }
 
-//CONTROLLER DE LOGIN PARA CANDIDATO
+//CONTROLLER DE LOGIN PARA CANDIDATO e USUARIO NO APP
 exports.singin = async (req, res) =>{
     
   const { email, password } = req.body;
  
 
-  if(email != ''){
-    if(password != ''){
-      await knex('candidates')
-              .where('email', email)
-              .select('password', 'id', 'name', 'login', 'status')
-              .first()
-              .then(user =>{
-                if(!user){
-                  return  knex('users').where('email', email)
-                            .select('password','id', 'name')
-                            .first()
-                            .then(user_2 =>{
-                              if(!user_2){
-                                res.json("Este usuario nao esta cadastrado")
-                              }else{
-                                return comparePassword(password, user_2.password)
+if(email != ''){
+  if(password != ''){
+     await knex('candidates').where('email', email)
+                      .select('password','id', 'name','login', 'status','role')
+                      .first()
+                      .then(user =>{
+                        
+                        if(!user){
+                         return  knex('users').where('email', email)
+                          .select('password','id', 'name','role')
+                          .first()
+                          .then(user_2 =>{
+                           
+                            if(!user_2){
+                              res.json("Este usuário não está cadastrado")
+                            }else{
+                              
+                              return comparePassword(password, user_2.password)
                                   .then(isAuthenticated=>{
                                     if(!isAuthenticated){
-                                      res.json("WRONG PASSWORD")
+                                      res.json(
+                                       "Senha incorreta"
+                                      )
                                     }else{
                                       const token = jwt.sign({id:user_2.id}, JWT_SECRET)
                                       //persistindo token
                                       res.cookie('t', token, {expire:new Date() + 8888})
                                      
                                       let id= user_2.id
+                                      let role = user_2.role
                                       
-                                      res.status(200).json({token, id})
+                                      
+                                      res.status(200).json({token, id, role})
                                     }
                                   })
                               }
@@ -539,22 +541,30 @@ exports.singin = async (req, res) =>{
                   if(user.status == 'deactived'){
                     res.json('usuário desativado')
                   }else{
-                    return comparePassword(password, user.password)
-                      .then(isAuthenticated=>{
-                        if(!isAuthenticated){
-                          res.json("WRONG PASSWORD")
-                        }else{
-                          const token = jwt.sign({id:user.id}, JWT_SECRET)
-                          //persistindo token
-                          res.cookie('t', token, {expire:new Date() + 8888})
-                          
-                          let id= user.id
-                          let username= user.login
-                          
-                          res.status(200).json({token, id, username})
-                        }
-                      })
-                  }
+
+                    if(user.status == 'deactived'){
+                      res.json('Usuário desativado')
+                    }else{
+                       return comparePassword(password, user.password)
+                           .then(isAuthenticated=>{
+                             if(!isAuthenticated){
+                               res.json(
+                                "Senha incorreta"
+                               )
+                             }else{
+                               const token = jwt.sign({id:user.id}, JWT_SECRET)
+                               //persistindo token
+                               res.cookie('t', token, {expire:new Date() + 8888})
+                              
+                               let id= user.id
+                               let username= user.login
+                               let role = user.role
+                               
+                               res.status(200).json({token, id, username, role})
+                             }
+                           })
+                    }
+                 }
                 }
               })
               .catch(err =>{
@@ -571,8 +581,11 @@ exports.singin = async (req, res) =>{
 };
 
 
+
+
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
+
   if(email != ''){
      const transporter = nodemailer.createTransport({
           pool: true,
@@ -585,24 +598,28 @@ exports.forgotPassword = async (req, res) =>{
             }
          });
   
+const candidate_data =  await knex('candidates').select('*').where('email', email);
 
+ 
+ 
+    if(candidate_data.length === 0) {
 
-  await knex('candidates').select('*').where('email', email)
-  .then(candidateData =>{
-    if(candidateData.length === 0) {
-      res.json( "Usuário com esse email não existe")
-    }else {
+        const user_data =  await knex('users').select('*').where('email', email)
+         if(user_data.length === 0){
+           res.json( "Line Cand>>Usuário com esse email não existe")
+         }
+         else {
 
-      const token =jwt.sign({id: candidateData.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
+      const token =jwt.sign({id: user_data.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
       
        
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
       to: email,
       subject: 'Resetar Senha',
-      text:'Sua solicitação para resetar senha foi efetuada com sucesso.\n\n'
+      text:'Sua solicitação para resetar senha Foi efetuada com sucesso.\n\n'
       +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
-      +`https://www.webcandidatos.com.br/password/reset/${token}.\n\n`
+      +`http://127.0.0.1:3000/password/reset/${token}.\n\n`
       +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
@@ -611,7 +628,7 @@ exports.forgotPassword = async (req, res) =>{
             resetLink:token
           }
 
-        return knex('candidates').select('*').where('email',candidateData[0].email)
+        return knex('users').select('*').where('email',user_data[0].email)
         .update(cand)
         .then(() =>{
 
@@ -633,7 +650,51 @@ exports.forgotPassword = async (req, res) =>{
 
       
     }
-  })
+
+      
+    }else {
+
+      const token =jwt.sign({id: candidate_data.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
+      
+       
+      const mailOptions = {
+      from: 'noreply@webcandidatos.com.br',
+      to: email,
+      subject: 'Resetar Senha',
+      text:'Sua solicitação para resetar senha foi efetuada com sucesso.\n\n'
+      +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
+      +`https://www.webcandidatos.com.br/password/reset/${token}.\n\n`
+      +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
+
+        };
+        //console.log(candidateData[0].email);
+          const cand = {
+            resetLink:token
+          }
+
+        return knex('candidates').select('*').where('email',candidate_data[0].email)
+        .update(cand)
+        .then(() =>{
+
+          transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+              res.status(400).json(error);
+        } else {
+          let msg = 'Email sent. Follow the instructions';
+          var data = {
+            msg,
+            token
+          }
+         res.status(200).json(data);
+
+        }});
+
+        })
+        
+
+      
+    }
+  
 
 
 
@@ -652,28 +713,27 @@ exports.resetPassword = async(req, res) =>{
   if(token){
     jwt.verify(token, process.env.JWT_SECRET, async (err,decoded)=>{
       if(err){
-        res.json({msg:"Incorretd ToKen or This Token  Expired"})
+        res.json("Token incorreto ou expirado")
       }
-       return await knex('candidates').select('*').where('resetLink', token).then(data =>{
+       const data = await knex('candidates').select('*').where('resetLink', token);
          // console.log(data)
           if(data.length === 0){
 
-              res.json({msg:"This Token is Invalid or Expirate"})
+            const user_data =  await knex('users').select('*').where('resetLink', token);
+
+              if(user_data.length === 0){
+                 res.json("Token inválido ou expirou")
+              }else{
+                res.json({msg:'Token válido', email:user_data[0].email})
+              }
+             
               // console.log('This Token is Invalid')
             }else {
-             
-
-              //
-               res.json({msg:"This Token is Ok", email:data[0].email})
-              // console.log('Token is Ok')
-            }
-  }).catch(err =>{
-    res.json(err)
-  })
-
-    })
-  }else {
-    res.json({msg:"Authentication Failed"})
+             res.json({msg:"Token válido", email:data[0].email})
+              }
+})
+}else {
+    res.json("Falha na autenticação")
     // console.log('Falha na autenticação')
   }
 
@@ -692,9 +752,31 @@ exports.setNewForgotPass = async(req, res) =>{
                 password:hash
               }
 
-                  await knex('candidates').select('*').where('email', email).update(cand)
-                  .then(()=>res.json({msg:"Password was Updated"}))
-                  .catch((err)=>res.json({msg:"Password was not Updated"}))
+               const candidate =    await knex('candidates').select('*').where('email', email);
+                  
+               if(candidate.length === 0){
+                 
+                 const user =  await knex('users').select('*').where('email', email);
+                 if(user.length !== 0){
+                      return await knex('users').select('*').where('email', email).update(cand)
+                       .then(()=>{
+                           res.status(200).json('Senha atualizada')
+                        }).catch(()=>{
+                             res.status(400).json('Problema ao atualizar senha')
+                         })
+
+                 }
+
+                 I
+               }else{
+
+                 return await knex('candidates').select('*').where('email', email).update(cand)
+                 .then(()=>{
+                   res.status(200).json('Senha atualizada')
+                 }).catch(()=>{
+                     res.status(400).json('Problema ao atualizar senha')
+                 })
+               }
     }else{
      console.log('As senhas precisam ser iguais')
     }
@@ -705,9 +787,9 @@ exports.setNewForgotPass = async(req, res) =>{
 
 }
 
-exports.singout=() =>{
+exports.singout= async (req, res) =>{
   res.clearCookie("t");
-  return res.json({message:"Singout Sucess"});
+  return res.json("Singout Sucess");
 }
 
 
