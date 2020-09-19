@@ -111,6 +111,7 @@ exports.createCandidate = async (req, res) =>{
         telephone,
         status: voucher === 'hagoromo2020' || voucher === 'hellesantos2020' || voucher === 'paulasg2020' ? 'actived' : 'deactived', //actived | deactived | verified
         qrcode:qrcode,
+
       };
 
       try{
@@ -499,49 +500,71 @@ exports.removeCandidate = (req,res) => {
 //CONTROLLER DE LOGIN PARA CANDIDATO
 exports.singin = async (req, res) =>{
     
-  const {email, password} = req.body;
+  const { email, password } = req.body;
+ 
 
   if(email != ''){
     if(password != ''){
-      knex('candidates')
-          .where('email', email)
-          .where('status', 'actived')
-          .select('password','id', 'name','login')
-          .first()
-          .then(user =>{
-            console.log(user)
-            if(!user){
-              //console.log('> if')
-              res.status(401).json({
-                error: "Conta pendente de aprovação."
-              })
-            }else{
-              ///console.log('> else')
-              //console.log(user)
-              return comparePassword(password, user.password)
+      await knex('candidates')
+              .where('email', email)
+              .select('password', 'id', 'name', 'login', 'status')
+              .first()
+              .then(user =>{
+                if(!user){
+                  return  knex('users').where('email', email)
+                            .select('password','id', 'name')
+                            .first()
+                            .then(user_2 =>{
+                              if(!user_2){
+                                res.json("Este usuario nao esta cadastrado")
+                              }else{
+                                return comparePassword(password, user_2.password)
+                                  .then(isAuthenticated=>{
+                                    if(!isAuthenticated){
+                                      res.json("WRONG PASSWORD")
+                                    }else{
+                                      const token = jwt.sign({id:user_2.id}, JWT_SECRET)
+                                      //persistindo token
+                                      res.cookie('t', token, {expire:new Date() + 8888})
+                                     
+                                      let id= user_2.id
+                                      
+                                      res.status(200).json({token, id})
+                                    }
+                                  })
+                              }
+                            })
+                }
+                else{
+                  if(user.status == 'deactived'){
+                    res.json('usuário desativado')
+                  }else{
+                    return comparePassword(password, user.password)
                       .then(isAuthenticated=>{
                         if(!isAuthenticated){
-                          res.status(401).json({
-                            error: "WRONG PASSWORD"
-                          })
+                          res.json("WRONG PASSWORD")
                         }else{
                           const token = jwt.sign({id:user.id}, JWT_SECRET)
                           //persistindo token
                           res.cookie('t', token, {expire:new Date() + 8888})
+                          
                           let id= user.id
-                          res.status(200).json({token, id})
+                          let username= user.login
+                          
+                          res.status(200).json({token, id, username})
                         }
                       })
-              }
-            }).catch(err =>{
-              res.status(400).json(err)
-            })
-      
+                  }
+                }
+              })
+              .catch(err =>{
+                res.status(400).json(err)
+              })
+              
       //res.status(400).json('Conta pendente de aprovação.')
     }else{
       res.json('Senha não fornecida')
     }
-    
   }else{
     res.json('Email não fornecido')
   }
@@ -762,27 +785,153 @@ exports.removeCoverPic = async (req, res) => {
 
 exports.listCandidatesCity = async (req, res) =>{
   const city = req.params.city_id
+  const role = req.params.role
+
+  //console.log(role)
   
-  const candidates = await knex('candidates')
+  //caso tenha passado o tipo do candidato
+  if(role && role != ''){
+    const candidates = await knex('candidates')
       .select(
         'id',
         'name',
         'party',
-        'coalition',
-        'city_id',
-        'state_id',
         'number',
         'profile_pic',
+        'badges',
+        'login'
+      )
+      .where('city_id', city)
+      .where('badges', 'like', `%${role}%`)
+      .orderBy('name', 'asc')
+
+      if(candidates.length > 0){
+        //console.log(candidates.length)
+        res.status(200).json(candidates) 
+      }else{
+        res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+      }
+  }else{
+    const candidates = await knex('candidates')
+      .select(
+        'id',
+        'name',
+        'party',
+        'number',
+        'profile_pic',
+        'badges',
+        'login'
       )
       .where('city_id', city)
       .orderBy('name', 'asc')
-  
-  if(candidates.length > 0){
-    //console.log(candidates.length)
-    res.status(200).json(candidates) 
-  }else{
-    res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+
+      if(candidates.length > 0){
+        //console.log(candidates.length)
+        res.status(200).json(candidates) 
+      }else{
+        res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+      }
   }
+};
+
+exports.searchCandidates = async (req, res) =>{
+  const name = req.params.name
+  const city = req.params.city_id
+  const role = req.params.role
+
+  //caso tenha passado o nome do candidato
+  if(name && name != ''){
+    //caso tenha passado o tipo do candidato
+    if(role && role != '' && role != undefined){
+      const candidates = await knex('candidates')
+        .select(
+          'id',
+          'name',
+          'party',
+          'number',
+          'profile_pic',
+          'badges',
+          'login'
+        )
+        .where('city_id', city)
+        .where('name', 'like', `%${name}%`)
+        .where('badges', 'like', `%${role}%`)
+        .orderBy('name', 'asc')
+
+        if(candidates.length > 0){
+          //console.log(candidates.length)
+          res.status(200).json(candidates) 
+        }else{
+          res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+        }
+    }else{
+      const candidates = await knex('candidates')
+        .select(
+          'id',
+          'name',
+          'party',
+          'number',
+          'profile_pic',
+          'badges',
+          'login'
+        )
+        .where('city_id', city)
+        .where('name', 'like', `%${name}%`)
+        .orderBy('name', 'asc')
+
+        if(candidates.length > 0){
+          //console.log(candidates.length)
+          res.status(200).json(candidates) 
+        }else{
+          res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+        }
+    }
+  }else{ //caso seja vazia a busca
+    //caso tenha passado o tipo do candidato
+    if(role && role != ''){
+      const candidates = await knex('candidates')
+        .select(
+          'id',
+          'name',
+          'party',
+          'number',
+          'profile_pic',
+          'badges',
+          'login'
+        )
+        .where('city_id', city)
+        .where('badges', 'like', `%${role}%`)
+        .orderBy('name', 'asc')
+
+        if(candidates.length > 0){
+          //console.log(candidates.length)
+          res.status(200).json(candidates) 
+        }else{
+          res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+        }
+    }else{
+      const candidates = await knex('candidates')
+        .select(
+          'id',
+          'name',
+          'party',
+          'number',
+          'profile_pic',
+          'badges',
+          'login'
+        )
+        .where('city_id', city)
+        .orderBy('name', 'asc')
+
+        if(candidates.length > 0){
+          //console.log(candidates.length)
+          res.status(200).json(candidates) 
+        }else{
+          res.status(400).json({ message: 'Não há candidatos cadastrados nessa cidade. '})
+        }
+    }
+  }
+  
 };
 
 

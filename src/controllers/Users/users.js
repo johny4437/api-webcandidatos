@@ -8,46 +8,58 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 // ESTRUTURA CRUD PRA USUÁRIO
 
-
-
-
-
 exports.createUser = async(req, res) => {
     
-    const { name, email } = req.body;
-    const id = crypto.randomBytes(10).toString('hex');
-    // concatena id com milisegundos
-
-    const newId = id + Date.now();
+    const {  email, confirm_password, password } = req.body;
     
-    const hash=  hashPassword(req.body.password);
-    const password = hash.hash;
-    const profile_pic = req.file.filename;
-    const photo_url = process.env.HOST_URL+"/"+profile_pic;
+    if(email !='' && password !=''){
+      if(password === confirm_password ){
+        //verifica se o email não está cadastrado na tabela de candidatos
+        await knex('candidates')
+          .select('email')
+          .where('email', email)
+          .then(async candidateData => {
+            if(candidateData.length === 0){
+              //caso não tenha cadastrado na tabela de candidatos, prossegue com o algoritmo
 
-    const user = {
-        id:newId,
-        name, 
-        email,
-        password,
-        profile_pic,
-        photo_url
-    }
+              await knex('users')
+                .select('email')
+                .where('email',email)
+                .then(usernameList =>{
+                  if(usernameList.length === 0){
+                    const id = crypto.randomBytes(10).toString('hex');
+                    // concatena id com milisegundos
+                    const newId = id + Date.now();
+                    const hash=  hashPassword(password);
+                    const new_password = hash.hash;
 
-   await knex('users').select('email').where('email',email)
-        .then(usernameList =>{
-            if(usernameList.length === 0){
-                return knex('users')
-                .returning('id')
-                .insert(user)
-                .then(()=> res.status(200).json({message:"User created"}));
+
+                    const user = {
+                      id:newId,
+                      email,
+                      password:new_password,
+                    }
+
+                    return knex('users')
+                      .returning('id')
+                      .insert(user)
+                      .then(()=> res.status(200).json('usuário criado com sucesso'));
+                  }else{
+                    console.log('email ja cadastrado em users')
+                    return res.status(400).json({message: 'O usuário já existe, recupere a senha ou use outro e-mail'})
+                  }
+                })
             }else{
-                return res.status(400).json({message:"User already exists"})
+              console.log('email ja cadastrado em candidates')
+              return res.status(400).json({message: 'O usuário já existe, recupere a senha ou use outro e-mail'})
             }
-            
-
-        })
-
+          })
+      }else{
+        res.status(400).json({message: 'As senhas precisam ser iguais'})
+      }
+    }else{
+      res.status(400).json({message: 'É preciso inserir todos os dados '})
+    }
 };
 // READ CONTROLLER
 exports.readUser = async (req, res) => {
