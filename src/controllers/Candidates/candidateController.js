@@ -23,8 +23,6 @@ exports.createCandidate = async (req, res) =>{
     name,
     email,
     number,
-    party,
-    coalition,
     city_id,
     telephone,
     state_id,
@@ -79,8 +77,6 @@ exports.createCandidate = async (req, res) =>{
         email,
         password,
         number,
-        party,
-        coalition,
         city_id,
         login:generatedLogin,
         state_id,
@@ -518,25 +514,25 @@ exports.singin = async (req, res) =>{
 if(email != ''){
   if(password != ''){
      await knex('candidates').where('email', email)
-                      .select('password','id', 'name','login', 'status')
+                      .select('password','id', 'name','login', 'status','role')
                       .first()
                       .then(user =>{
                         
                         if(!user){
                          return  knex('users').where('email', email)
-                          .select('password','id', 'name')
+                          .select('password','id', 'name','role')
                           .first()
                           .then(user_2 =>{
                            
                             if(!user_2){
-                              res.json("Este usuario nao esta cadastrado")
+                              res.json("Este usuário não está cadastrado")
                             }else{
                               
                               return comparePassword(password, user_2.password)
                                   .then(isAuthenticated=>{
                                     if(!isAuthenticated){
                                       res.json(
-                                       "WRONG PASSWORD"
+                                       "Senha incorreta"
                                       )
                                     }else{
                                       const token = jwt.sign({id:user_2.id}, JWT_SECRET)
@@ -544,9 +540,10 @@ if(email != ''){
                                       res.cookie('t', token, {expire:new Date() + 8888})
                                      
                                       let id= user_2.id
+                                      let role = user_2.role
                                       
                                       
-                                      res.status(200).json({token, id})
+                                      res.status(200).json({token, id, role})
                                     }
                                   })
                            
@@ -561,13 +558,13 @@ if(email != ''){
                         else{
 
                            if(user.status == 'deactived'){
-                             res.json('usuário desativado')
+                             res.json('Usuário desativado')
                            }else{
                               return comparePassword(password, user.password)
                                   .then(isAuthenticated=>{
                                     if(!isAuthenticated){
                                       res.json(
-                                       "WRONG PASSWORD"
+                                       "Senha  incorreta"
                                       )
                                     }else{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)
@@ -576,8 +573,9 @@ if(email != ''){
                                      
                                       let id= user.id
                                       let username= user.login
+                                      let role = user.role
                                       
-                                      res.status(200).json({token, id, username})
+                                      res.status(200).json({token, id, username, role})
                                     }
                                   })
                            }
@@ -605,7 +603,7 @@ if(email != ''){
 
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
-  console.log(req.body)
+
   if(email != ''){
      const transporter = nodemailer.createTransport({
           pool: true,
@@ -808,9 +806,9 @@ exports.setNewForgotPass = async(req, res) =>{
 
 }
 
-exports.singout=() =>{
+exports.singout= async (req, res) =>{
   res.clearCookie("t");
-  return res.json({message:"Singout Sucess"});
+  return res.json("Singout Sucess");
 }
 
 

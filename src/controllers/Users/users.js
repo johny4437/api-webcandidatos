@@ -14,8 +14,8 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 
 exports.createUser = async(req, res) => {
     
-    const {  email, confirm_password, password } = req.body;
-    
+    const {  email, confirm_password, password,state_id, city_id } = req.body;
+   
 
     if(email !='' && password !=''){
         if(password === confirm_password ){
@@ -32,6 +32,8 @@ exports.createUser = async(req, res) => {
         id:newId,
         email,
         password:new_password,
+        state_id,
+        city_id
         
     }
 
@@ -98,6 +100,7 @@ exports.updateUser =  async (req, res) => {
         profile_pic,
         photo_url
     }
+    console.log(photo_url)
 
   await  knex('users').select('*')
     .where('id', id)
