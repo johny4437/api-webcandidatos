@@ -564,7 +564,7 @@ if(email != ''){
                                   .then(isAuthenticated=>{
                                     if(!isAuthenticated){
                                       res.json(
-                                       "Senha  incorreta"
+                                       "Senha incorreta"
                                       )
                                     }else{
                                       const token = jwt.sign({id:user.id}, JWT_SECRET)

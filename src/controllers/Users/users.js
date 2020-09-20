@@ -37,41 +37,42 @@ exports.createUser = async(req, res) => {
         
     }
 
-   await knex('users').select('email').where('email',email)
+   const candidate_verification =  await knex('candidates').select('email').where('email',email);
+
+   if(candidate_verification.length === 0){
+       await knex('users').select('email').where('email',email)
         .then(usernameList =>{
             if(usernameList.length === 0){
                 return knex('users')
                 .returning('id')
                 .insert(user)
-                .then(()=>{
-                    const role = {
-                        roles:"0",
-                        user_id:newId
-                    }
-                    return knex('roles').insert(role).then(()=>{
-                        res.status(200).json('usuário criado com sucesso')
-                    }).catch(()=>{
-                        res.status(400).json('Usuario nao criado')
-                    })
-                    
+                .then(()=>{             
+                     res.json('Usuário criado')
                 });
             }else{
-                return res.status(400).json('usuário já existe')
+               res.json('Usuário já existe')
             }
             
 
         })
 
+   }else{
+       res.json('Usuário já existe')
+   }
+
+
+   
+
         }
 
         else{
-            res.status(400).json('As senhas precisam ser iguais')
+            res.json('As senhas precisam ser iguais')
         }
         
     
 
     }else{
-        res.status(400).json('É preciso inserir todos os dados ')
+        res.json('É preciso inserir todos os dados ')
     }
    
 
