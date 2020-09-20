@@ -9,7 +9,7 @@ exports.follow = async (req, res) => {
       .select("id")
       .where('login', login)
   
-  console.log(req.params)
+  //console.log(req.params)
 
   if(type_user === 'user'){ //usuário normal
     knex('followers').select('user_id').where('user_id',user_id).andWhere('candidate_id', candidate[0].id)
@@ -42,7 +42,7 @@ exports.follow = async (req, res) => {
 };
 
 exports.unfollow = async (req, res) =>{
-  console.log(req.params)
+  //console.log(req.params)
 
   const login = req.params.login
   const user_id = req.params.user_id
@@ -131,7 +131,7 @@ exports.isFollower = async (req, res) => {
           res.status(400).json(false)  
         }
     }).catch((error) => {
-      console.log(error)
+      //console.log(error)
         res.status(404).json({msg:"YOU DONT HAVE FOLLOWERS"})
     })
   }else{ //caso seja candidato
@@ -145,7 +145,7 @@ exports.isFollower = async (req, res) => {
         res.status(400).json(false)  
       }
     }).catch((error) => {
-      console.log(error)
+      //console.log(error)
         res.status(404).json({msg:"YOU DONT HAVE FOLLOWERS"})
     })
   }

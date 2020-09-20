@@ -121,6 +121,55 @@ exports.listAllPostsLogin = async (req, res) =>{
   
 }
 
+exports.countNumLikes = async (req, res) =>{
+  const post_id = req.params.post_id
+
+  knex('likes').select('id').where('post_id', post_id)
+  .then(result => {    
+      res.status(200).json(result.length)
+  }).catch((error) => {
+    console.log(error)
+      res.status(404).json({msg:"YOU DONT HAVE LIKES"})
+  })  
+}
+
+exports.postIsLiked = async (req, res) =>{
+  const post_id = req.params.post_id
+  const user_id = req.params.user_id
+  const type_user = req.params.type_user
+
+  if(type_user === 'user'){
+    knex('likes').select('id')
+      .where('post_id', post_id)
+      .where('user_id', user_id)
+      .then(result => {    
+        if(result.length > 0){
+          res.status(200).json(true)  
+        }else{
+          res.status(400).json(false)  
+        }
+      }).catch((error) => {
+        console.log(error)
+          res.status(404).json({msg:"YOU DONT HAVE LIKES"})
+      }) 
+  }else{ //post curtido por um candidato
+    knex('likes').select('id')
+      .where('post_id', post_id)
+      .where('candidate_id', user_id)
+      .then(result => {    
+        if(result.length > 0){
+          res.status(200).json(true)  
+        }else{
+          res.status(400).json(false)  
+        }
+      }).catch((error) => {
+        console.log(error)
+          res.status(404).json({msg:"YOU DONT HAVE LIKES"})
+      }) 
+  }
+   
+}
+
 exports.removePost = (req, res) => {
     const id = req. params.candidate_id;
     const post_id = req.headers.post_id

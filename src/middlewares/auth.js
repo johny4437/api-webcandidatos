@@ -14,7 +14,7 @@ const auth = (req, res, next) =>{
         if(!parts.length == 2){
             res.staus(401).json("Token Error");
         }
-        
+         
         const [scheme, token] = parts;
         if(!/^Bearer$/i.test(scheme)){
             res.json({error:"Token in bad format"});
