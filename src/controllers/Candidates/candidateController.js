@@ -101,7 +101,7 @@ exports.createCandidate = async (req, res) =>{
       subject: 'Confirmação de Cadastro',
       text:`${name} sua conta foi criada com sucesso`
       +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
-      +`http://127.0.0.1:3000/candidates/login.\n\n`
+      +`http://127.0.0.1:3000/login.\n\n`
       +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
@@ -599,10 +599,85 @@ if(email != ''){
 };
 
 
+// CONTROLLER DE LOGIN PARA CANDIDATO NO SITE
+exports.loginSite = async (req, res) =>{
+    
+  const {email, password} = req.body;
+ 
+
+if(email != ''){
+  if(password != ''){
+     await knex('candidates').where('email', email)
+                      .select('password','id', 'name','login', 'status','role')
+                      .first()
+                      .then(user =>{
+                        
+                        if(!user){
+                         return  knex('users').where('email', email)
+                          .select('password','id', 'name','role')
+                          .first()
+                          .then(user_2 =>{
+                           
+                            if(!user_2){
+                              res.json("Este usuário não está cadastrado")
+                            }else{
+                                res.json("Este usuário não é um candidato")
+                            }
+
+                          })
+                          
+                          
+                        }
+
+                        else{
+
+                         
+                           
+                              return comparePassword(password, user.password)
+                                  .then(isAuthenticated=>{
+                                    if(!isAuthenticated){
+                                      res.json(
+                                       "Senha incorreta"
+                                      )
+                                    }else{
+                                      const token = jwt.sign({id:user.id}, JWT_SECRET)
+                                      //persistindo token
+                                      res.cookie('t', token, {expire:new Date() + 8888})
+                                     
+                                      let id= user.id
+                                      let status = user.status
+                                      let username= user.login
+                                      let role = user.role
+                                      
+                                      res.status(200).json({token, id, username, role, status})
+                                    }
+                                  })
+                           
+                        }
+                      })
+
+
+
+
+  }else{
+    res.json('Senha não fornecida')
+  }
+  
+}else{
+  res.json('Email não fornecido')
+}
+
+  
+
+    
+};
+
+
 
 
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
+  console.log(req.body)
 
   if(email != ''){
      const transporter = nodemailer.createTransport({
@@ -625,12 +700,12 @@ const candidate_data =  await knex('candidates').select('*').where('email', emai
 
         const user_data =  await knex('users').select('*').where('email', email)
          if(user_data.length === 0){
-           res.json( "Line Cand>>Usuário com esse email não existe")
+           res.json( "Usuário com esse email não existe")
          }
          else {
 
       const token =jwt.sign({id: user_data.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
-      
+      console.log(token)
        
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
@@ -638,7 +713,7 @@ const candidate_data =  await knex('candidates').select('*').where('email', emai
       subject: 'Resetar Senha',
       text:'Sua solicitação para resetar senha Foi efetuada com sucesso.\n\n'
       +'Para prosseguir com a mudança de senha por favor clique no link abaixo.\n\n '
-      +`http://127.0.0.1:3000/password/reset/${token}.\n\n`
+      +`http://www.webcandidatos.com.br:3000/password/reset/${token}.\n\n`
       +'Caso você não tenha solicitado a mudança de senha desconsidere este email.\n'
 
         };
@@ -655,7 +730,7 @@ const candidate_data =  await knex('candidates').select('*').where('email', emai
         if (error) {
               res.status(400).json(error);
         } else {
-          let msg = 'Email sent. Follow the instructions';
+          let msg = 'Email enviado siga as instruções para alterar a sua senha';
           var data = {
             msg,
             token
@@ -699,7 +774,7 @@ const candidate_data =  await knex('candidates').select('*').where('email', emai
         if (error) {
               res.status(400).json(error);
         } else {
-          let msg = 'Email sent. Follow the instructions';
+          let msg = 'Email enviado siga as instruções para alterar a sua senha';
           var data = {
             msg,
             token

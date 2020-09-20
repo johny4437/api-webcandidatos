@@ -15,7 +15,8 @@ const {
     forgotPassword,
     resetPassword,
     updateProfilePic,
-    setNewForgotPass
+    setNewForgotPass,
+    loginSite
     
 } = require('../controllers/Candidates/candidateController');
 const {getFollowers} = require('../controllers/Users/Follow');
@@ -46,6 +47,7 @@ route.put('/candidates/update/:candidate_id', auth,isAuthCandidate,updateCandida
 route.put('/candidates/update/password/:candidate_id', auth,  isAuthCandidate, updatePassword);
 route.put('/candidates/update/profile_pic/:candidate_id', auth, isAuthCandidate,updateProfilePic)
 route.post('/candidates/singin',singin);
+route.post('/candidates/login_site',loginSite);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
 route.put('/candidates/forgot/password', forgotPassword);
