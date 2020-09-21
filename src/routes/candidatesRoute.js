@@ -21,7 +21,8 @@ const {
     removeProfilePic,
     removeCoverPic,
     listCandidatesCity,
-    searchCandidates
+    searchCandidates,
+    loginSite
     
 } = require('../controllers/Candidates/candidateController');
 const {
@@ -119,6 +120,7 @@ route.delete('/candidates/update/profile_pic/remove/:candidate_id', auth, isAuth
 route.delete('/candidates/update/cover_pic/remove/:candidate_id', auth, isAuthCandidate, removeCoverPic)
 
 route.post('/candidates/singin',singin);
+route.post('/candidates/login_site',loginSite);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
 route.put('/candidates/forgot/password', forgotPassword);

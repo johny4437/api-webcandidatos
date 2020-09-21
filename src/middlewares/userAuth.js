@@ -17,6 +17,9 @@ exports.isAuth = (req, res, next) => {
 
 exports.userId = async (req, res, next, id) =>{
 const response = await knex('users').select('id', 'role').where('id',id);
+if(response.length === 0){
+	 return res.status(400).json("User Not Found");
+}
 req.profile = response[0].id;
 req.role =  response[0].role
 
