@@ -3,7 +3,7 @@ const express = require('express')
 const app = express();
 
 const path = require('path')
-const morgan = require('morgan');
+//const morgan = require('morgan');
 const cors = require('cors')
 const candidateRoute = require('./routes/candidatesRoute');
 const postsRoute = require('./routes/postsRoute');
@@ -30,7 +30,7 @@ app.use(cors());
 
 // app.use(express.json());
 // app.use(express.urlencoded({extended:true}));
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json({limit: '2100mb', extended: true}));

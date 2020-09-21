@@ -52,7 +52,7 @@ exports.getCityName = async(req, res) => {
 
 exports.getStateAndCityName = async(req, res) => {
   //carrega os dados da cidade 
-  console.log("id "+req.params.id)
+  //console.log("id "+req.params.id)
   knex('cidades')
       .select('*')
       .where('id', req.params.id)
@@ -60,8 +60,8 @@ exports.getStateAndCityName = async(req, res) => {
           if(cityData.length !== 0) {
             //getEstado(cityData.estado_id, cityData.cidade)
 
-            console.log('estado ', cityData.estado_id)
-            console.log('cidade ', cityData.cidade)
+            //console.log('estado ', cityData.estado_id)
+            //console.log('cidade ', cityData.cidade)
             //res.status(200).json(cityData);
             knex('estados')
               .select('estado')

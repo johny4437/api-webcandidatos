@@ -8,10 +8,10 @@ exports.create = async(req, res) => {
         badge,
         created_at
     }
-    console.log(newBadge)
+    //console.log(newBadge)
      knex('badges').insert(newBadge)
     .then(data => {
-        console.log(data)
+        //console.log(data)
         // res.status(200).json({msg:"BADGE CREATED"});
     }).catch(err => res.status(400).json({error:err}));
 

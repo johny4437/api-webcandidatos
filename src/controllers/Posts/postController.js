@@ -20,8 +20,6 @@ exports.createPost =  (req, res) => {
     //console.log(req.files)
 
     if(req.files){
-        console.log('> filees')
-        console.log(req.files)
         let path = '';
         let name = '';
         req.files.forEach(function(files,index, arr){
@@ -35,13 +33,14 @@ exports.createPost =  (req, res) => {
 
         post.photo_url = name;
     }else{
-      console.log('> nao veio arquivos')
+      
     }
 
-    console.log(post)
     knex('posts').insert(post).then(()=>{
         res.json({msg:"POST CREATE"})
-    }).catch((err)=>console.log(err))
+    }).catch((err)=>{
+      
+    })
  
 
 
@@ -80,7 +79,6 @@ exports.updatePost =  (req, res) => {
        post.photo_url = `${process.env.HOST_URL}/${name}`;
     }
 
-    console.log(post)
     knex('posts').where('candidate_id', candidate_id).andWhere('id', post_id).update(post).then(()=>{
         res.json('certo')
     }).catch((err)=>console.log(err))
@@ -128,7 +126,6 @@ exports.countNumLikes = async (req, res) =>{
   .then(result => {    
       res.status(200).json(result.length)
   }).catch((error) => {
-    console.log(error)
       res.status(404).json({msg:"YOU DONT HAVE LIKES"})
   })  
 }
@@ -149,7 +146,6 @@ exports.postIsLiked = async (req, res) =>{
           res.status(400).json(false)  
         }
       }).catch((error) => {
-        console.log(error)
           res.status(404).json({msg:"YOU DONT HAVE LIKES"})
       }) 
   }else{ //post curtido por um candidato
@@ -163,7 +159,6 @@ exports.postIsLiked = async (req, res) =>{
           res.status(400).json(false)  
         }
       }).catch((error) => {
-        console.log(error)
           res.status(404).json({msg:"YOU DONT HAVE LIKES"})
       }) 
   }
