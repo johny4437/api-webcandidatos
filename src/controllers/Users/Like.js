@@ -13,14 +13,12 @@ exports.likeCreate = async (req, res) => {
     // console.log(type_user)
 
     if(type_user === 'user'){
-      console.log('> user')
       const likes = await knex('likes')
         .select('user_id')
         .where('user_id', user_id)
         .where('post_id', post_id)
 
       if(likes.length === 0){
-        console.log(">> insert")
           return knex('likes').insert({
               status:true,
               user_id,
@@ -30,14 +28,12 @@ exports.likeCreate = async (req, res) => {
         res.status(400).json('YOU ALREADY LIKE IT')
       }
     }else{
-      console.log('> candidate')
       const likes = await knex('likes')
         .select('candidate_id')
         .where('candidate_id', user_id)
         .where('post_id', post_id)
 
       if(likes.length === 0){
-        console.log(">> insert")
           return knex('likes').insert({
             status:true,
             candidate_id: user_id,
@@ -61,14 +57,12 @@ exports.likeCreateCandidate = async (req, res) => {
   // console.log(candidate_id)
   // console.log(type_user)
 
-  console.log('> candidate')
   const likes = await knex('likes')
     .select('candidate_id')
     .where('candidate_id', candidate_id)
     .where('post_id', post_id)
 
   if(likes.length === 0){
-    console.log(">> insert")
       return knex('likes').insert({
         status:true,
         candidate_id: candidate_id,

@@ -124,14 +124,14 @@ exports.createCandidate = async (req, res) =>{
                   transporter.sendMail(mailOptions, function(error, info){
                     if (error) {
                       //res.status(400).json(error);
-                      console.log('>> erro ao enviar email '+error)
+                      //console.log('>> erro ao enviar email '+error)
                     }else{
                       let msg = 'Email sent. Follow the instructions';
                       var data = {
                         msg
                       }
                       //res.status(200).json(data);
-                      console.log('>> email enviado com sucesso!')
+                      //console.log('>> email enviado com sucesso!')
                     }
                   }); 
 
@@ -139,23 +139,23 @@ exports.createCandidate = async (req, res) =>{
                 })
             }else{
               //console.log('usuário ja existe')
-              console.log('> error')
+              //console.log('> error')
               return res.status(400).send({ message: "USUÁRIO JÁ CADASTRADO" })
             };
           })
       }catch(e){
-        console.log(error)
+        //console.log(error)
         return res.status(400).send({ error })
       }
       
 
     }else{ //as senhas não são iguais, erro
-      console.log('> as senhas não conferem')
+      //console.log('> as senhas não conferem')
       return res.status(400).json({message: "AS SENHAS NÃO CONFEREM"})
     } 
 
   }else{ //tem algum dado faltando, erro
-    console.log('> erro dados inválidos')
+    //console.log('> erro dados inválidos')
     return res.status(400).json({ message: "DADOS INVÁLIDOS" })  
   } 
     
@@ -660,7 +660,7 @@ if(email != ''){
 
 exports.forgotPassword = async (req, res) =>{
   const { email } =  req.body;
-  console.log(req.body)
+  //console.log(req.body)
 
   if(email != ''){
      const transporter = nodemailer.createTransport({
@@ -687,7 +687,7 @@ const candidate_data =  await knex('candidates').select('*').where('email', emai
          else {
 
       const token =jwt.sign({id: user_data.id, exp: Math.floor(Date.now() / 1000) + (60 * 60)} ,process.env.JWT_SECRET)
-      console.log(token)
+      //console.log(token)
        
       const mailOptions = {
       from: 'noreply@webcandidatos.com.br',
@@ -854,7 +854,7 @@ exports.setNewForgotPass = async(req, res) =>{
                  })
                }
     }else{
-     console.log('As senhas precisam ser iguais')
+     //console.log('As senhas precisam ser iguais')
     }
 
   
@@ -997,7 +997,7 @@ exports.searchCandidates = async (req, res) =>{
   const city = req.params.city_id
   const role = req.params.role
 
-  console.log(req.params)
+  //console.log(req.params)
   //caso tenha passado o nome do candidato
   if(name && name != ''){
     //caso tenha passado o tipo do candidato

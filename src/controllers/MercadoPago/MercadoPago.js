@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const nodemailer = require('nodemailer');
 const getFullUrl = (req) =>{
 	const url = req.protocol + '://' + req.get('host');
-	console.log(url)
+	//console.log(url)
 	return url;
 }
 
@@ -75,8 +75,8 @@ exports.boletoPayment = (req, res) =>{
   Mercadopago.configurations.setAccessToken('TEST-72547546986684-052613-8d6be443a62b75c5ddd1ea8ce5e5fd24-243177627');
 
   const {email, cpf, first_name} = req.body
-  console.log(cpf)
-  console.log(email)
+  //console.log(cpf)
+  //console.log(email)
 
 var payment_data = {
   transaction_amount: 1999.99,

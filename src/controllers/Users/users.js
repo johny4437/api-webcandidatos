@@ -47,12 +47,10 @@ exports.createUser = async(req, res) => {
                       .insert(user)
                       .then(()=> res.status(200).json('usuário criado com sucesso'));
                   }else{
-                    console.log('email ja cadastrado em users')
                     return res.status(400).json({message: 'O usuário já existe, recupere a senha ou use outro e-mail'})
                   }
                 })
             }else{
-              console.log('email ja cadastrado em candidates')
               return res.status(400).json({message: 'O usuário já existe, recupere a senha ou use outro e-mail'})
             }
           })
@@ -87,7 +85,7 @@ exports.updateUser =  async (req, res) => {
         profile_pic,
         photo_url
     }
-    console.log(photo_url)
+    //console.log(photo_url)
 
   await  knex('users').select('*')
     .where('id', id)

@@ -39,11 +39,11 @@ exports.imageDecode = (imageData) =>{
     try {
         fs.writeFile(userUploadedImagePath,imageBuffer.data,function() 
         {
-          console.log('DEBUG - feed:message: Saved to disk image attached by user:', userUploadedImagePath);
+          //console.log('DEBUG - feed:message: Saved to disk image attached by user:', userUploadedImagePath);
         })
         
     } catch (error) {
-        console.log('ERROR:', error);
+        //console.log('ERROR:', error);
     }
 
 }
