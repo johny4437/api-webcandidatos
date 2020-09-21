@@ -4,7 +4,7 @@ const knex = require('../database/connection');
 exports.isAuthAdmin = (req, res, next) => {
     // console.log(req.profile[0].id)
     //  console.log({parms:req.params.user_id})
-     if(!(req.profile[0].id == req.params.admin_id)){
+     if(!(req.profile == req.params.admin_id || req.role == "1")){
          return res.status(400).json({error:"User not authorized"})
      }
      next()
@@ -14,17 +14,12 @@ exports.isAuthAdmin = (req, res, next) => {
 
 
 
-exports.adminId = (req, res, next, id) =>{
-    knex('admin').select('id').where('id',id)
-    .then(data =>{
-        if(!data){
-            return res.status(400).json("User Not Found");
-        }
-         req.profile = data
+exports.adminId = async (req, res, next, id) =>{
+   const response = await  knex('admin').select('id','role').where('id',id);
+   req.profile = response[0].id;
+   req.role = response[0].role;
 
-        // console.log({userInitial:data})
+   next();
 
-        next();
-    })
 };
 

@@ -102,7 +102,7 @@ var payment_data = {
 };
 
 Mercadopago.payment.create(payment_data).then(function (data) {
-console.log(data)
+res.json(data.body.transaction_details.external_resource_url)
 const mailOptions = {
               from: 'noreply@webcandidatos.com.br',
               to: email,

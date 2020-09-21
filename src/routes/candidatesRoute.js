@@ -19,10 +19,19 @@ const {
     updateProfilePic,
     setNewForgotPass,
     removeProfilePic,
-    removeCoverPic
+    removeCoverPic,
+    listCandidatesCity,
+    searchCandidates,
+    loginSite
     
 } = require('../controllers/Candidates/candidateController');
-const {getFollowers} = require('../controllers/Users/Follow');
+const {
+  getFollowers,
+  getFollowersCount,
+  isFollower,
+  follow,
+  unfollow
+} = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
 const {readVisits} = require('../controllers/ViewProfile/viewProfile')
@@ -46,7 +55,8 @@ route.post('/candidates/singup', createCandidate);
 route.get('/candidates', readCandidates);
 
 
-// route.get('/candidates/list',listCandidate)
+route.get('/candidates/list/city/:city_id/:role?', listCandidatesCity)
+route.get('/candidates/search/:name/:city_id/:role?', searchCandidates)
 route.get('/candidates/:login', getOneCandidate);
 route.get('/candidates/list/:candidate_id', auth,isAuthCandidate, getSomeCandidateData);
 route.get('/candidates/singout',singout);
@@ -110,13 +120,20 @@ route.delete('/candidates/update/profile_pic/remove/:candidate_id', auth, isAuth
 route.delete('/candidates/update/cover_pic/remove/:candidate_id', auth, isAuthCandidate, removeCoverPic)
 
 route.post('/candidates/singin',singin);
+route.post('/candidates/login_site',loginSite);
 route.delete('/candidates/delete/:candidate_id', auth,isAuthCandidate, removeCandidate);
 // ESQECEU SENHA
 route.put('/candidates/forgot/password', forgotPassword);
 route.get('/password/reset/:token', resetPassword);
 route.put('/update/forgot/password',setNewForgotPass)
+
 // numero de seguidores
 route.get('/followers/:candidate_id',getFollowers);
+route.get('/followers/count/:login',getFollowersCount);
+route.get('/followers/is_follower/:login/:user_id/:type_user',isFollower);
+route.get('/followers/follow/:login/:user_id/:type_user',follow);
+route.get('/followers/unfollow/:login/:user_id/:type_user',unfollow);
+
 // ================================================================
 // VER NUMERO DE VISITANTES
 route.get('/candidates/visits/:candidate_id',auth,isAuthCandidate,readVisits)

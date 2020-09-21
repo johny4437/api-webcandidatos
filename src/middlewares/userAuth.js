@@ -2,9 +2,9 @@ const knex = require('../database/connection');
 
 
 exports.isAuth = (req, res, next) => {
-   // console.log(req.profile[0].id)
-    console.log({parms:req.params.user_id})
-    if(!(req.profile[0].id == req.params.user_id)){
+   	console.log(req.role)
+    // console.log({parms:req.params.user_id})
+    if(req.profile !== req.params.user_id || req.role!=="0"  ){
         return res.status(400).json({error:"User not authorized"})
     }
     next()
@@ -16,16 +16,16 @@ exports.isAuth = (req, res, next) => {
 
 
 exports.userId = async (req, res, next, id) =>{
-await knex('users').select('id').where('id',id)
-    .then(data =>{
-        if(!data){
-            return res.status(400).json("User Not Found");
-        }
-         req.profile = data
+const response = await knex('users').select('id', 'role').where('id',id);
+if(response.length === 0){
+	 return res.status(400).json("User Not Found");
+}
+req.profile = response[0].id;
+req.role =  response[0].role
 
-        //console.log(data)
 
-        next();
-    })
+
+
+next();
 };
 
