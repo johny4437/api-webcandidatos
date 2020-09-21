@@ -30,7 +30,8 @@ const {
   getFollowersCount,
   isFollower,
   follow,
-  unfollow
+  unfollow,
+  getFollowed
 } = require('../controllers/Users/Follow');
 const auth = require('../middlewares/auth');
 const {isAuthCandidate, candidateId} = require('../middlewares/candidateAuth');
@@ -129,6 +130,7 @@ route.put('/update/forgot/password',setNewForgotPass)
 
 // numero de seguidores
 route.get('/followers/:candidate_id',getFollowers);
+route.get('/followers/getFollowed/:user_id/:type_user',getFollowed);
 route.get('/followers/count/:login',getFollowersCount);
 route.get('/followers/is_follower/:login/:user_id/:type_user',isFollower);
 route.get('/followers/follow/:login/:user_id/:type_user',follow);

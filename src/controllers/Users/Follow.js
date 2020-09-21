@@ -151,3 +151,60 @@ exports.isFollower = async (req, res) => {
   }
   
 }
+
+//pega os candidatos que um usuário segue
+exports.getFollowed = async (req, res) => {
+  const user_id = req.params.user_id
+  const type_user = req.params.type_user //tipo do usuário que está fazendo a consulta, candidate ou user
+
+  
+  if(type_user === 'user'){ //consulta normal
+    knex('candidates')
+      .select('candidates.id','name','party','coalition','description','city_id','state_id','number','profile_pic','cover_pic','badges','proposals','login') 
+      .join('followers', 'followers.candidate_id', 'candidates.id')
+      .where({user_id: user_id}) //pega na coluna do id do candidato que segue outro candidato
+      .orderBy('name', 'asc')
+      .then(result => {    
+        if(result.length > 0){
+          res.status(200).json(result)  
+        }else{
+          res.status(400).json({msg:"Você ainda não segue ninguém"})
+        }
+      }).catch((error) => {
+        console.log(error)
+        res.status(400).json({msg:"Você ainda não segue ninguém"})
+      })
+  }else{ //caso seja candidato
+    // knex('followers')
+    //   .select('candidate_id') //pega só o id do candidato que a pessoa segue
+    //   .where('candidate', user_id) //pega na coluna do id do candidato que segue outro candidato
+    //   .orderBy('id', 'desc')
+    //   .then(result => {    
+    //     if(result.length > 0){
+    //       res.status(200).json(result)  
+    //     }else{
+    //       res.status(400).json({msg:"Você ainda não segue ninguém"})
+    //     }
+    //   }).catch((error) => {
+    //     //console.log(error)
+    //       res.status(400).json({msg:"Você ainda não segue ninguém"})
+    //   })
+    knex('candidates')
+      .select('candidates.id','name','party','coalition','description','city_id','state_id','number','profile_pic','cover_pic','badges','proposals','login') 
+      .join('followers', 'followers.candidate_id', 'candidates.id')
+      .where({candidate: user_id}) //pega na coluna do id do candidato que segue outro candidato
+      .orderBy('name', 'asc')
+      .then(result => {    
+        if(result.length > 0){
+          res.status(200).json(result)  
+        }else{
+          res.status(400).json({msg:"Você ainda não segue ninguém"})
+        }
+      }).catch((error) => {
+        console.log(error)
+        res.status(400).json({msg:"Você ainda não segue ninguém"})
+      })
+  }
+  
+}
+
