@@ -253,7 +253,8 @@ exports.getOneCandidate = async(req, res) =>{
       'profile_pic',
       'cover_pic',
       'badges',
-      'proposals');
+      'proposals',
+      'login');
   
   const stateId = candidate[0].state_id;
   //console.log(stateId)

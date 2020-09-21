@@ -26,7 +26,6 @@ exports.read = (req, res) => {
         }else{
             res.status(400).json({error:"THERE ARE NO FAVORITES"});
         }
-        
     })
 }
 
