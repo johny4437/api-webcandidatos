@@ -8,6 +8,7 @@ require('dotenv').config({path:path.resolve (__dirname ,'..','..', '.env')})
 // CRIAR POST
 
 exports.createPost =  (req, res) => {
+    console.log('> createPost')
     const candidate_id = req.params.candidate_id; 
     const { title, description } = req.body;
 
@@ -17,7 +18,7 @@ exports.createPost =  (req, res) => {
         candidate_id
     }
 
-    //console.log(req.files)
+    console.log(req.files)
 
     if(req.files){
         let path = '';
